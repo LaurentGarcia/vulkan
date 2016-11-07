@@ -19,6 +19,7 @@
 	#include <stdexcept>
 	#include <functional>
 	#include <vector>
+	#include "VDeleter.h"
 
 #endif
 
