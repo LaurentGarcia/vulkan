@@ -38,6 +38,19 @@ void vKdevice::fillAppVkInfo(){
 	this->createVkInfo.enabledLayerCount = 0;
 	this->fillExtensionsProperties();
 }
+void vKdevice::fillAppVkInfo(vKlayers vklayersInfo){
+
+	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
+	unsigned int glfwExtensionCount = 0;
+	const char** glfwExtensions;
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	this->createVkInfo.enabledExtensionCount   = glfwExtensionCount;
+	this->createVkInfo.ppEnabledExtensionNames = glfwExtensions;
+	this->createVkInfo.enabledLayerCount =       vklayersInfo.getValidationLayers().size();
+	this->createVkInfo.ppEnabledLayerNames =     vklayersInfo.getValidationLayers().data();
+	this->fillExtensionsProperties();
+}
 
 void vKdevice::fillExtensionsProperties(){
 
@@ -52,6 +65,7 @@ void vKdevice::fillExtensionsProperties(){
 }
 
 
+
 VkResult vKdevice::initVulkan(){
 
 	this->fillVkInfo();
@@ -59,3 +73,21 @@ VkResult vKdevice::initVulkan(){
 	return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
 
 }
+
+VkResult vKdevice::initVulkan(vKlayers vklayersInfo){
+
+	if (vklayersInfo.getLayersEnable()){
+		printf("Enabled layers.");
+		fflush(stdout);
+		this->fillVkInfo();
+		this->fillAppVkInfo(vklayersInfo);
+		return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
+	}
+	else
+	{
+		this->fillVkInfo();
+		this->fillAppVkInfo();
+		return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
+	}
+}
+

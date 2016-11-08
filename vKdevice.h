@@ -10,8 +10,10 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
+#include "vKlayers.h"
 #include "VDeleter.h"
 #include <vector>
+
 
 class vKdevice {
 
@@ -21,6 +23,7 @@ public:
 	virtual ~vKdevice();
 
 	VkResult initVulkan();
+	VkResult initVulkan(vKlayers vklayersInfo);
 
 private:
 
@@ -30,6 +33,7 @@ private:
 	std::vector<VkExtensionProperties>extensions;
 
 	void fillAppVkInfo();
+	void fillAppVkInfo(vKlayers vklayersInfo);
 	void fillVkInfo();
 	void fillExtensionsProperties();
 };

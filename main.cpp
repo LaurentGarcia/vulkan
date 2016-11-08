@@ -20,6 +20,7 @@
 	#include <glfw3.h>
 	#include "vKwindow.h"
 	#include "vKdevice.h"
+	#include "vKlayers.h"
 #endif
 
 const int WIDTH  = 800;
@@ -28,13 +29,24 @@ char* windowName = {"Vulkan Window"};
 
 int main(void){
 
+	vKlayers vkLayers;
+	vkLayers.initLayerSupport();
+	vkLayers.printAvailableLayers();
 
 	vKwindow window;
 	window.initWindow(WIDTH,HEIGHT,windowName);
+
 	vKdevice vkDevice;
 	VkResult resultInitVulkan;
-	resultInitVulkan = vkDevice.initVulkan();
-	printf("Init Vulkan: %d, 0 = Succesfull", resultInitVulkan);
+
+
+
+	resultInitVulkan = vkDevice.initVulkan(vkLayers);
+	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
+	fflush(stdout);
+
+
+	printf("Init Layers: %d, 1 = Succesfull\n", vkLayers.getLayersEnable());
 	fflush(stdout);
 
 	while (!glfwWindowShouldClose(window.getWindow()))
