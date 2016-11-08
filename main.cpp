@@ -33,6 +33,9 @@ int main(void){
 	vkLayers.initLayerSupport();
 	vkLayers.printAvailableLayers();
 
+	printf("Init Layers: %d, 1 = Succesfull\n", vkLayers.getLayersEnable());
+	fflush(stdout);
+
 	vKwindow window;
 	window.initWindow(WIDTH,HEIGHT,windowName);
 
@@ -46,8 +49,6 @@ int main(void){
 	fflush(stdout);
 
 
-	printf("Init Layers: %d, 1 = Succesfull\n", vkLayers.getLayersEnable());
-	fflush(stdout);
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{

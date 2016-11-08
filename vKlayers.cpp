@@ -47,11 +47,11 @@ bool vKlayers::initLayerSupport(){
 		if (!layerFound)
 		{
 			this->vKlayersEnable = false;
-			return false;
+			return this->vKlayersEnable;
 		}
 	}
 	this->vKlayersEnable = true;
-	return true;
+	return this->vKlayersEnable;
 }
 
 std::vector<VkLayerProperties> vKlayers::getAvailableLayers(){

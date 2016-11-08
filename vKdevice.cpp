@@ -77,7 +77,7 @@ VkResult vKdevice::initVulkan(){
 VkResult vKdevice::initVulkan(vKlayers vklayersInfo){
 
 	if (vklayersInfo.getLayersEnable()){
-		printf("Enabled layers.");
+		printf("Init Vulkan with layers.");
 		fflush(stdout);
 		this->fillVkInfo();
 		this->fillAppVkInfo(vklayersInfo);
@@ -85,6 +85,8 @@ VkResult vKdevice::initVulkan(vKlayers vklayersInfo){
 	}
 	else
 	{
+		printf("Init Vulkan without Layers");
+		fflush(stdout);
 		this->fillVkInfo();
 		this->fillAppVkInfo();
 		return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
