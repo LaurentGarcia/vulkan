@@ -73,7 +73,7 @@ public:
 private:
 
 	bool vKlayersEnable;
-	const std::vector<const char*> validationLayers = {"LUNARG_standard_validation layer"};
+	const std::vector<const char*>  validationLayers = {"VK_LAYER_LUNARG_standard_validation"};
 	std::vector<VkLayerProperties>  availableLayers = {};
 
 };
