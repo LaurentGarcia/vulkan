@@ -38,18 +38,17 @@ void vKdevice::fillAppVkInfo(){
 	this->createVkInfo.enabledLayerCount = 0;
 	this->fillExtensionsProperties();
 }
-void vKdevice::fillAppVkInfo(vKlayers vklayersInfo){
+void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
 
 	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
-	unsigned int glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	this->createVkInfo.enabledExtensionCount   = glfwExtensionCount;
-	this->createVkInfo.ppEnabledExtensionNames = glfwExtensions;
-	this->createVkInfo.enabledLayerCount =       vklayersInfo.getValidationLayers().size();
-	this->createVkInfo.ppEnabledLayerNames =     vklayersInfo.getValidationLayers().data();
-	this->fillExtensionsProperties();
+	auto extensions = vklayersInfo->getRequiredExtensions();
+	this->createVkInfo.enabledExtensionCount = extensions.size();
+	this->createVkInfo.ppEnabledExtensionNames = extensions.data();
+	if (vklayersInfo->ValidationLayersActivated()){
+		this->createVkInfo.enabledLayerCount =       vklayersInfo->getValidationLayers().size();
+		this->createVkInfo.ppEnabledLayerNames =     vklayersInfo->getValidationLayers().data();
+	}
 }
 
 void vKdevice::fillExtensionsProperties(){
@@ -64,7 +63,16 @@ void vKdevice::fillExtensionsProperties(){
 	}
 }
 
+void vKdevice::setupDebugCallback(){
 
+	this->createCallbackInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+	this->createCallbackInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+	this->createCallbackInfo.pfnCallback = vKlayers::debugCallback;
+
+	if (vKlayers::CreateDebugReportCallbackEXT(this->instance,&this->createCallbackInfo,nullptr,&this->callback)!=VK_SUCCESS){
+		throw std::runtime_error("failed to set up debug callback!");
+	}
+}
 
 VkResult vKdevice::initVulkan(){
 
@@ -74,14 +82,19 @@ VkResult vKdevice::initVulkan(){
 
 }
 
-VkResult vKdevice::initVulkan(vKlayers vklayersInfo){
-
-	if (vklayersInfo.getLayersEnable()){
+VkResult vKdevice::initVulkan(vKlayers* vklayersInfo){
+	VkResult result;
+	if (vklayersInfo->getLayersEnable()){
 		printf("Init Vulkan with layers.");
 		fflush(stdout);
 		this->fillVkInfo();
 		this->fillAppVkInfo(vklayersInfo);
-		return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
+		result= vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
+		if (result != VK_SUCCESS) {
+		            throw std::runtime_error("failed to create instance!");
+		};
+		this->setupDebugCallback();
+		return result;
 	}
 	else
 	{

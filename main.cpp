@@ -44,7 +44,7 @@ int main(void){
 
 
 
-	resultInitVulkan = vkDevice.initVulkan(vkLayers);
+	resultInitVulkan = vkDevice.initVulkan(&vkLayers);
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
 

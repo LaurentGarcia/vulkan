@@ -23,19 +23,22 @@ public:
 	virtual ~vKdevice();
 
 	VkResult initVulkan();
-	VkResult initVulkan(vKlayers vklayersInfo);
+	VkResult initVulkan(vKlayers* vklayersInfo);
 
 private:
 
-	VDeleter<VkInstance> instance{vkDestroyInstance};
-	VkApplicationInfo    appVkInfo    = {};
-	VkInstanceCreateInfo createVkInfo = {};
-	std::vector<VkExtensionProperties>extensions;
+	VDeleter<VkInstance> 				instance{vkDestroyInstance};
+	VkDebugReportCallbackEXT 			callback;
+	VkApplicationInfo    				appVkInfo    = {};
+	VkInstanceCreateInfo 				createVkInfo = {};
+	VkDebugReportCallbackCreateInfoEXT  createCallbackInfo = {};
+	std::vector<VkExtensionProperties>	extensions;
 
 	void fillAppVkInfo();
-	void fillAppVkInfo(vKlayers vklayersInfo);
+	void fillAppVkInfo(vKlayers* vklayersInfo);
 	void fillVkInfo();
 	void fillExtensionsProperties();
+	void setupDebugCallback();
 };
 
 #endif /* VKDEVICE_H_ */

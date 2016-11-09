@@ -27,16 +27,53 @@ public:
 	virtual ~vKlayers();
 
 	bool getLayersEnable();
+
 	bool initLayerSupport();
+
+	std::vector<const char*> getRequiredExtensions();
+
+	// Static members Callback
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+														VkDebugReportFlagsEXT flags,
+														VkDebugReportObjectTypeEXT objType,
+														uint64_t obj,
+														size_t location,
+														int32_t code,
+														const char* layerPrefix,
+														const char* msg,
+														void* userData) {
+		std::cerr << "validation layer: " << msg << std::endl;
+
+	    return VK_FALSE;
+	};
+
+	static VkResult CreateDebugReportCallbackEXT      (VkInstance instance,
+													   const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
+													   const VkAllocationCallbacks* pAllocator,
+													   VkDebugReportCallbackEXT* pCallback) {
+
+	    auto func = (PFN_vkCreateDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
+	    if (func != nullptr) {
+	        return func(instance, pCreateInfo, pAllocator, pCallback);
+	    } else {
+	        return VK_ERROR_EXTENSION_NOT_PRESENT;
+	    }
+	}
+
+	bool ValidationLayersActivated();
+	// Get private members
 	std::vector<VkLayerProperties> getAvailableLayers();
+
 	std::vector<const char*> getValidationLayers();
+
 
 	//Debug
 	void printAvailableLayers();
+
 private:
 
 	bool vKlayersEnable;
-	std::vector<const char*> validationLayers = {"VK_LAYER_LUNARG_standard_validation"};
+	const std::vector<const char*> validationLayers = {"LUNARG_standard_validation layer"};
 	std::vector<VkLayerProperties>  availableLayers = {};
 
 };

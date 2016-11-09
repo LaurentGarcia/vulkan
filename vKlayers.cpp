@@ -7,6 +7,7 @@
 
 #include "vKlayers.h"
 
+
 vKlayers::vKlayers() {
 	// TODO Auto-generated constructor stub
 
@@ -53,6 +54,30 @@ bool vKlayers::initLayerSupport(){
 	this->vKlayersEnable = true;
 	return this->vKlayersEnable;
 }
+
+
+std::vector<const char*> vKlayers::getRequiredExtensions(){
+
+	std::vector<const char*> extensions;
+
+	unsigned int glfwExtensionCount = 0;
+	const char** glfwExtensions;
+
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+	for (unsigned int i = 0; i<glfwExtensionCount;i++){
+		extensions.push_back(glfwExtensions[i]);
+	}
+	if (this->vKlayersEnable){
+		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	}
+	return extensions;
+}
+
+bool vKlayers::ValidationLayersActivated(){
+	return enableValidationLayers;
+};
+//Utils and get private members
 
 std::vector<VkLayerProperties> vKlayers::getAvailableLayers(){
 	return this->availableLayers;
