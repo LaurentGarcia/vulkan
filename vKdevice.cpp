@@ -39,15 +39,16 @@ void vKdevice::fillAppVkInfo(){
 	this->fillExtensionsProperties();
 }
 void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
+	static auto extensions = vklayersInfo->getRequiredExtensions();
+	static auto layers = vklayersInfo->getValidationLayers();
 
 	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
-	auto extensions = vklayersInfo->getRequiredExtensions();
 	this->createVkInfo.enabledExtensionCount = extensions.size();
 	this->createVkInfo.ppEnabledExtensionNames = extensions.data();
 	if (vklayersInfo->ValidationLayersActivated()){
-		this->createVkInfo.enabledLayerCount =       vklayersInfo->getValidationLayers().size();
-		this->createVkInfo.ppEnabledLayerNames =     vklayersInfo->getValidationLayers().data();
+		this->createVkInfo.enabledLayerCount =       layers.size();
+		this->createVkInfo.ppEnabledLayerNames =     layers.data();
 	}
 }
 
