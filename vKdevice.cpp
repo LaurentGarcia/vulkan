@@ -70,7 +70,7 @@ void vKdevice::setupDebugCallback(){
 	this->createCallbackInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 	this->createCallbackInfo.pfnCallback = vKlayers::debugCallback;
 
-	if (vKlayers::CreateDebugReportCallbackEXT(this->instance,&this->createCallbackInfo,nullptr,&this->callback)!=VK_SUCCESS){
+	if (vKlayers::CreateDebugReportCallbackEXT(this->instance,&this->createCallbackInfo,nullptr,this->callback.replace())!=VK_SUCCESS){
 		throw std::runtime_error("failed to set up debug callback!");
 	}
 }

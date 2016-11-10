@@ -60,6 +60,15 @@ public:
 	    }
 	}
 
+	static void DestroyDebugReportCallbackEXT		  (VkInstance instance,
+													   VkDebugReportCallbackEXT callback,
+													   const VkAllocationCallbacks* pAllocator) {
+	    auto func = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+	    if (func != nullptr) {
+	        func(instance, callback, pAllocator);
+	    }
+	}
+
 	bool ValidationLayersActivated();
 	// Get private members
 	std::vector<VkLayerProperties> getAvailableLayers();

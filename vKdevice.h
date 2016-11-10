@@ -28,7 +28,8 @@ public:
 private:
 
 	VDeleter<VkInstance> 				instance{vkDestroyInstance};
-	VkDebugReportCallbackEXT 			callback;
+	//VkDebugReportCallbackEXT 			callback;
+	VDeleter<VkDebugReportCallbackEXT>  callback{instance,vKlayers::DestroyDebugReportCallbackEXT};
 	VkApplicationInfo    				appVkInfo    = {};
 	VkInstanceCreateInfo 				createVkInfo = {};
 	VkDebugReportCallbackCreateInfoEXT  createCallbackInfo = {};
