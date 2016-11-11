@@ -16,6 +16,10 @@ vKdevice::~vKdevice() {
 	// TODO Auto-generated destructor stub
 }
 
+VDeleter<VkInstance> vKdevice::getInstance(){
+	return this->instance;
+}
+
 void vKdevice::fillVkInfo(){
 
 	this->appVkInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;

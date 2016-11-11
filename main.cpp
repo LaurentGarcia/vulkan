@@ -21,6 +21,7 @@
 	#include "vKwindow.h"
 	#include "vKdevice.h"
 	#include "vKlayers.h"
+	#include "vKphysicalDevice.h"
 #endif
 
 const int WIDTH  = 800;
@@ -42,13 +43,12 @@ int main(void){
 	vKdevice vkDevice;
 	VkResult resultInitVulkan;
 
-
-
 	resultInitVulkan = vkDevice.initVulkan(&vkLayers);
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
 
-
+	vKphysicalDevice physicalDevice;
+	physicalDevice.pickPhysicalDevice(&vkDevice);
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{
