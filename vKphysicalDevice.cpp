@@ -26,8 +26,8 @@ void vKphysicalDevice::enumerateDevices(vKdevice* vkDevice){
 	if (deviceCount==0){
 		throw std::runtime_error ("failed to find GPU with Vulkan Support");
 	}
-	this->availabePhysicalDevices.resize(deviceCount);
-	vkEnumeratePhysicalDevices(vkDevice->getInstance(),&deviceCount,this->availabePhysicalDevices.data());
+	this->availablePhysicalDevices.resize(deviceCount);
+	vkEnumeratePhysicalDevices(vkDevice->getInstance(),&deviceCount,this->availablePhysicalDevices.data());
 }
 
 bool vKphysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
@@ -48,7 +48,7 @@ void vKphysicalDevice::pickPhysicalDevice(vKdevice* vkDevice){
 
 	this->enumerateDevices(vkDevice);
 
-	for (const auto& device: availabePhysicalDevices ){
+	for (const auto& device: availablePhysicalDevices ){
 		if(isDeviceSuitable(device))
 		{
 			this->physicalDevice = device;

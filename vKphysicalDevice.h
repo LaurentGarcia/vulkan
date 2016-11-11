@@ -32,7 +32,7 @@ public:
 private:
 
 	VkPhysicalDevice                     physicalDevice = VK_NULL_HANDLE;
-	std::vector<VkPhysicalDevice> availabePhysicalDevices = {};
+	std::vector<VkPhysicalDevice>        availablePhysicalDevices = {};
 
 	void enumerateDevices(vKdevice* vkDevice);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
