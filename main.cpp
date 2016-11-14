@@ -47,8 +47,9 @@ int main(void){
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
 
+
 	vKphysicalDevice physicalDevice;
-	physicalDevice.pickPhysicalDevice(&vkDevice);
+	physicalDevice.pickPhysicalDevice(vkDevice.getInstance());
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{

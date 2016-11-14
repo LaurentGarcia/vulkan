@@ -24,7 +24,7 @@ public:
 
 	VkResult initVulkan();
 	VkResult initVulkan(vKlayers* vklayersInfo);
-	VDeleter<VkInstance> getInstance();
+	const VkInstance* getInstance();
 
 private:
 

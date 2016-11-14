@@ -27,14 +27,14 @@ public:
 				return graphicFamily >=0;
 			}
 		};
-	void pickPhysicalDevice(vKdevice* vkDevice);
+	void pickPhysicalDevice(const VkInstance* vkDevice);
 
 private:
 
 	VkPhysicalDevice                     physicalDevice = VK_NULL_HANDLE;
 	std::vector<VkPhysicalDevice>        availablePhysicalDevices = {};
 
-	void enumerateDevices(vKdevice* vkDevice);
+	void enumerateDevices(const VkInstance* vkDevice);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	bool isDeviceSuitable(VkPhysicalDevice device);
 

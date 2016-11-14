@@ -16,8 +16,8 @@ vKdevice::~vKdevice() {
 	// TODO Auto-generated destructor stub
 }
 
-VDeleter<VkInstance> vKdevice::getInstance(){
-	return this->instance;
+const VkInstance* vKdevice::getInstance(){
+	return instance.operator &();
 }
 
 void vKdevice::fillVkInfo(){
