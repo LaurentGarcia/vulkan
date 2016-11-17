@@ -70,6 +70,7 @@ public:
 	}
 
 	bool ValidationLayersActivated();
+
 	// Get private members
 	std::vector<VkLayerProperties> getAvailableLayers();
 

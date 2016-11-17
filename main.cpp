@@ -22,6 +22,7 @@
 	#include "vKdevice.h"
 	#include "vKlayers.h"
 	#include "vKphysicalDevice.h"
+	#include "vkLogicalDevice.h"
 #endif
 
 const int WIDTH  = 800;
@@ -30,26 +31,30 @@ char* windowName = {"Vulkan Window"};
 
 int main(void){
 
+	//1. Init Layers
 	vKlayers vkLayers;
 	vkLayers.initLayerSupport();
 	vkLayers.printAvailableLayers();
 
-	printf("Init Layers: %d, 1 = Succesfull\n", vkLayers.getLayersEnable());
-	fflush(stdout);
-
+	//2. Setup a Window
 	vKwindow window;
 	window.initWindow(WIDTH,HEIGHT,windowName);
 
+	//3. Create a logical Vulkan Device
 	vKdevice vkDevice;
 	VkResult resultInitVulkan;
-
 	resultInitVulkan = vkDevice.initVulkan(&vkLayers);
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
 
-
+	//4. Found the most suitable GPU in our computer
 	vKphysicalDevice physicalDevice;
 	physicalDevice.pickPhysicalDevice(vkDevice.getInstance());
+
+	//5. Create Logican Device (Interface for our Physical Device
+	vkLogicalDevice logicalDevice;
+	logicalDevice.createLogicalDevice(physicalDevice,vkLayers);
+
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{

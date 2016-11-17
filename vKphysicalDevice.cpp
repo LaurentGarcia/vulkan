@@ -85,7 +85,10 @@ vKphysicalDevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysi
 	return indices;
 }
 
+VkPhysicalDevice vKphysicalDevice::getPhysicalDevice(){
+	return this->physicalDevice;
 
+};
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features
 
