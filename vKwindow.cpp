@@ -7,9 +7,9 @@
 
 #include "vKwindow.h"
 
-vKwindow::vKwindow() {
+vKwindow::vKwindow(vKdevice device) {
 	// TODO Auto-generated constructor stub
-
+	this->instance = device.getInstance();
 }
 
 vKwindow::~vKwindow() {

@@ -10,19 +10,24 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
+#include "VDeleter.h"
+#include "vKdevice.h"
 
 class vKwindow {
 
 public:
 
-	vKwindow();
+	vKwindow(vKdevice device);
 	virtual ~vKwindow();
 
 	bool initWindow(int witdh,int height,char* windowName);
 	GLFWwindow* getWindow();
 
 private:
-	GLFWwindow* window;
+
+	GLFWwindow*            window;
+	const VkInstance*      instance;
+	VDeleter<VkSurfaceKHR> surface{instance,vkDestroySurfaceKHR};
 
 };
 

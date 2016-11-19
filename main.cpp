@@ -51,9 +51,10 @@ int main(void){
 	vKphysicalDevice physicalDevice;
 	physicalDevice.pickPhysicalDevice(vkDevice.getInstance());
 
-	//5. Create Logican Device (Interface for our Physical Device
+	//5. Create Logican Device (Interface for our Physical Device and init Queues!
 	vkLogicalDevice logicalDevice;
 	logicalDevice.createLogicalDevice(physicalDevice,vkLayers);
+
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))
