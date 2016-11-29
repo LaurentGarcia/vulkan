@@ -37,7 +37,7 @@ bool vkLogicalDevice::createLogicalDevice(vKphysicalDevice psDevice,vKlayers lay
 
 	if (enableValidationLayers){
 		this->createInfo.enabledLayerCount       = layers.getValidationLayers().size();
-		this->createInfo.ppEnabledLayerNames = layers.getValidationLayers().data();
+		this->createInfo.ppEnabledLayerNames     = layers.getValidationLayers().data();
 	}
 
 	else{

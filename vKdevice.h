@@ -26,11 +26,15 @@ public:
 	VkResult initVulkan(vKlayers* vklayersInfo);
 	const VkInstance* getInstance();
 
-private:
+protected:
 
 	VDeleter<VkInstance> 				instance{vkDestroyInstance};
 	//VkDebugReportCallbackEXT 			callback;
 	VDeleter<VkDebugReportCallbackEXT>  callback{instance,vKlayers::DestroyDebugReportCallbackEXT};
+
+private:
+
+
 	VkApplicationInfo    				appVkInfo    = {};
 	VkInstanceCreateInfo 				createVkInfo = {};
 	VkDebugReportCallbackCreateInfoEXT  createCallbackInfo = {};
