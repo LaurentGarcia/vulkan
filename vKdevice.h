@@ -8,8 +8,9 @@
 #ifndef VKDEVICE_H_
 #define VKDEVICE_H_
 
-#define GLFW_INCLUDE_VULKAN
+#include <vulkan.h>
 #include <glfw3.h>
+
 #include "vKlayers.h"
 #include "VDeleter.h"
 #include <vector>
