@@ -8,11 +8,12 @@
 #ifndef VKWINDOW_H_
 #define VKWINDOW_H_
 
-#define GLFW_INCLUDE_VULKAN
-#include <glfw3.h>
-#include "VDeleter.h"
-#include "vKdevice.h"
-
+#if __linux__
+	#define  GLFW_INCLUDE_VULKAN
+	#include <glfw3.h>
+	#include "VDeleter.h"
+	#include "vKdevice.h"
+#endif
 
 
 class vKwindow : public vKdevice {
@@ -23,15 +24,16 @@ public:
 	virtual ~vKwindow();
 
 	bool initWindow(int witdh,int height,char* windowName);
+	void createSurface();
+
 	GLFWwindow* getWindow();
+
 
 private:
 
 	GLFWwindow*            		  window;
-	VDeleter<VkSurfaceKHR>        surface{instance,vkDestroySurfaceKHR};
-	VkDisplaySurfaceCreateInfoKHR surfaceProperties = {};
+	VDeleter<VkSurfaceKHR>        surface{vKdevice::instance,vkDestroySurfaceKHR};
 
-	void createSurface();
 };
 
 #endif /* VKWINDOW_H_ */

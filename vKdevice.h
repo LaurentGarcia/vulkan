@@ -8,9 +8,9 @@
 #ifndef VKDEVICE_H_
 #define VKDEVICE_H_
 
+
 #include <vulkan.h>
 #include <glfw3.h>
-
 #include "vKlayers.h"
 #include "VDeleter.h"
 #include <vector>
@@ -27,19 +27,18 @@ public:
 	VkResult initVulkan(vKlayers* vklayersInfo);
 	const VkInstance* getInstance();
 
+
 protected:
 
 	VDeleter<VkInstance> 				instance{vkDestroyInstance};
 	//VkDebugReportCallbackEXT 			callback;
 	VDeleter<VkDebugReportCallbackEXT>  callback{instance,vKlayers::DestroyDebugReportCallbackEXT};
-
-private:
-
-
 	VkApplicationInfo    				appVkInfo    = {};
 	VkInstanceCreateInfo 				createVkInfo = {};
 	VkDebugReportCallbackCreateInfoEXT  createCallbackInfo = {};
 	std::vector<VkExtensionProperties>	extensions;
+
+private:
 
 	void fillAppVkInfo();
 	void fillAppVkInfo(vKlayers* vklayersInfo);

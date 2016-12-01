@@ -43,6 +43,7 @@ void vKdevice::fillAppVkInfo(){
 	this->fillExtensionsProperties();
 }
 void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
+
 	static auto extensions = vklayersInfo->getRequiredExtensions();
 	static auto layers = vklayersInfo->getValidationLayers();
 

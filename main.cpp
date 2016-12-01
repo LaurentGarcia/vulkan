@@ -40,12 +40,16 @@ int main(void){
 	vKwindow window;
 	window.initWindow(WIDTH,HEIGHT,windowName);
 
+
 	//3. Create a logical Vulkan Device
 	vKdevice vkDevice;
 	VkResult resultInitVulkan;
 	resultInitVulkan = vkDevice.initVulkan(&vkLayers);
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
+
+	//4. Create Device
+	window.createSurface();
 
 	//4. Found the most suitable GPU in our computer
 	vKphysicalDevice physicalDevice;
@@ -55,6 +59,7 @@ int main(void){
 	vkLogicalDevice logicalDevice;
 	logicalDevice.createLogicalDevice(physicalDevice,vkLayers);
 
+	window.createSurface();
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))
