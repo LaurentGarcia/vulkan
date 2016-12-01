@@ -44,16 +44,23 @@ void vKdevice::fillAppVkInfo(){
 }
 void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
 
-	static auto extensions = vklayersInfo->getRequiredExtensions();
-	static auto layers = vklayersInfo->getValidationLayers();
+	this->vulkanExtensions       = vklayersInfo->getRequiredExtensions();
+	this->vulkanLayersAvailable  = vklayersInfo->getValidationLayers();
+
+	//debug
+	for (auto i = this->vulkanExtensions.begin(); i!=this->vulkanExtensions.end();++i)
+	{
+		std::cout<< *i << ' ';
+	};
+	//debug end
 
 	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
-	this->createVkInfo.enabledExtensionCount = extensions.size();
-	this->createVkInfo.ppEnabledExtensionNames = extensions.data();
+	this->createVkInfo.enabledExtensionCount = vulkanExtensions.size();
+	this->createVkInfo.ppEnabledExtensionNames = vulkanExtensions.data();
 	if (vklayersInfo->ValidationLayersActivated()){
-		this->createVkInfo.enabledLayerCount =       layers.size();
-		this->createVkInfo.ppEnabledLayerNames =     layers.data();
+		this->createVkInfo.enabledLayerCount =       vulkanLayersAvailable.size();
+		this->createVkInfo.ppEnabledLayerNames =     vulkanLayersAvailable.data();
 	}
 }
 
@@ -61,10 +68,10 @@ void vKdevice::fillExtensionsProperties(){
 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,nullptr);
-	this->extensions.resize(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,this->extensions.data());
+	this->instanceExtensionsProperties.resize(extensionCount);
+	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,this->instanceExtensionsProperties.data());
 	std::cout << "available extensions:" << std::endl;
-	for (const auto& extension : extensions) {
+	for (const auto& extension : instanceExtensionsProperties) {
 	    std::cout << "\t" << extension.extensionName << std::endl;
 	}
 }

@@ -37,7 +37,7 @@ bool vKwindow::initWindow(int witdh,int height,char* windowName){
 
 void vKwindow::createSurface(){
 
-	VkResult err = glfwCreateWindowSurface(vKdevice::instance,this->window,nullptr,surface.replace());
+	VkResult err = glfwCreateWindowSurface(instance,this->window,nullptr,surface.replace());
 	if (err!= VK_SUCCESS){
         throw std::runtime_error("failed to create window surface!");
 	}
