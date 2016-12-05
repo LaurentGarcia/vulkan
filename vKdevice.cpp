@@ -37,27 +37,25 @@ void vKdevice::fillAppVkInfo(){
 	unsigned int glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
 	this->createVkInfo.enabledExtensionCount   = glfwExtensionCount;
 	this->createVkInfo.ppEnabledExtensionNames = glfwExtensions;
 	this->createVkInfo.enabledLayerCount = 0;
-	this->fillExtensionsProperties();
+	//this->fillExtensionsProperties();
 }
 void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
+
+	this->createVkInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	this->createVkInfo.pApplicationInfo        = &this->appVkInfo;
 
 	this->vulkanExtensions       = vklayersInfo->getRequiredExtensions();
 	this->vulkanLayersAvailable  = vklayersInfo->getValidationLayers();
 
-	//debug
-	for (auto i = this->vulkanExtensions.begin(); i!=this->vulkanExtensions.end();++i)
-	{
-		std::cout<< *i << ' ';
-	};
-	//debug end
+	//this->fillExtensionsProperties();
 
-	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
-	this->createVkInfo.enabledExtensionCount = vulkanExtensions.size();
-	this->createVkInfo.ppEnabledExtensionNames = vulkanExtensions.data();
+	this->createVkInfo.enabledExtensionCount   = this->vulkanExtensions.size();
+	this->createVkInfo.ppEnabledExtensionNames = this->vulkanExtensions.data();
+
 	if (vklayersInfo->ValidationLayersActivated()){
 		this->createVkInfo.enabledLayerCount =       vulkanLayersAvailable.size();
 		this->createVkInfo.ppEnabledLayerNames =     vulkanLayersAvailable.data();
@@ -69,10 +67,12 @@ void vKdevice::fillExtensionsProperties(){
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,nullptr);
 	this->instanceExtensionsProperties.resize(extensionCount);
+	this->vulkanExtensions.resize(extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,this->instanceExtensionsProperties.data());
 	std::cout << "available extensions:" << std::endl;
 	for (const auto& extension : instanceExtensionsProperties) {
 	    std::cout << "\t" << extension.extensionName << std::endl;
+	    this->vulkanExtensions.push_back(extension.extensionName);
 	}
 }
 
@@ -91,6 +91,7 @@ VkResult vKdevice::initVulkan(){
 
 	this->fillVkInfo();
 	this->fillAppVkInfo();
+
 	return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
 
 }
