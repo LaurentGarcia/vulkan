@@ -50,7 +50,6 @@ private:
 	void fillAppVkInfo();
 	void fillAppVkInfo(vKlayers* vklayersInfo);
 	void fillVkInfo();
-	void fillExtensionsProperties();
 	void setupDebugCallback();
 };
 

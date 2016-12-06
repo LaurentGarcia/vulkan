@@ -53,9 +53,8 @@ void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
 	this->vulkanExtensions       = getRequiredExtensions(vklayersInfo);
 	this->vulkanLayersAvailable  = vklayersInfo->getValidationLayers();
 
-	//this->fillExtensionsProperties();
-
 	this->createVkInfo.enabledExtensionCount   = (unsigned int)this->vulkanExtensions.size();
+	printf("Size for enabledExt Count> %d \n",this->vulkanExtensions.size());
 	this->createVkInfo.ppEnabledExtensionNames = this->vulkanExtensions.data();
 
 	if (vklayersInfo->ValidationLayersActivated()){
@@ -64,19 +63,6 @@ void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
 	}
 }
 
-void vKdevice::fillExtensionsProperties(){
-
-	uint32_t extensionCount = 0;
-	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,nullptr);
-	this->instanceExtensionsProperties.resize(extensionCount);
-	this->vulkanExtensions.resize(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,this->instanceExtensionsProperties.data());
-	std::cout << "available extensions:" << std::endl;
-	for (const auto& extension : instanceExtensionsProperties) {
-	    std::cout << "\t" << extension.extensionName << std::endl;
-	    this->vulkanExtensions.push_back(extension.extensionName);
-	}
-}
 
 void vKdevice::setupDebugCallback(){
 
