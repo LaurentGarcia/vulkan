@@ -28,7 +28,7 @@ public:
 	VkResult initVulkan();
 	VkResult initVulkan(vKlayers* vklayersInfo);
 	const VkInstance* getInstance();
-
+	std::vector<const char*> getRequiredExtensions(vKlayers* layers);
 
 protected:
 

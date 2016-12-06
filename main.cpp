@@ -48,6 +48,7 @@ int main(void){
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
 
+
 	//4. Create SurfACE
 	window.createSurface();
 

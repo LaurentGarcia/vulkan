@@ -28,6 +28,7 @@ public:
 
 	GLFWwindow* getWindow();
 
+	static void error_callback(int error, const char* description);
 
 private:
 

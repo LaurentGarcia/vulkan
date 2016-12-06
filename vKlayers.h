@@ -30,8 +30,6 @@ public:
 
 	bool initLayerSupport();
 
-	std::vector<const char*> getRequiredExtensions();
-
 	// Static members Callback
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 														VkDebugReportFlagsEXT flags,

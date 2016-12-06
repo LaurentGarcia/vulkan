@@ -16,16 +16,23 @@ vKwindow::~vKwindow() {
 	// TODO Auto-generated destructor stub
 }
 
+void vKwindow::error_callback(int error, const char* description)
+{
+	puts(description);
+}
+
 GLFWwindow* vKwindow::getWindow(){
 
 	return this->window;
 
 }
 
+
 bool vKwindow::initWindow(int witdh,int height,char* windowName){
 
 	//Init GLFW
 	glfwInit();
+	glfwSetErrorCallback(error_callback);
 	glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);
 
@@ -42,4 +49,5 @@ void vKwindow::createSurface(){
         throw std::runtime_error("failed to create window surface!");
 	}
 };
+
 

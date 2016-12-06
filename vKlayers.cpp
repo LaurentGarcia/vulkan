@@ -56,26 +56,7 @@ bool vKlayers::initLayerSupport(){
 }
 
 
-std::vector<const char*> vKlayers::getRequiredExtensions(){
 
-	std::vector<const char*> extensions;
-
-	unsigned int glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	//debug
-
-	for (unsigned int i = 0; i<glfwExtensionCount;i++){
-		extensions.push_back(glfwExtensions[i]);
-		printf("glfwGetRequiredExtension> %s",glfwExtensions[i]);
-		fflush(stdout);
-	}
-	if (this->vKlayersEnable){
-		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-	}
-	return extensions;
-}
 
 bool vKlayers::ValidationLayersActivated(){
 	return enableValidationLayers;
