@@ -50,16 +50,15 @@ int main(void){
 
 
 	//4. Create SurfACE
-	window.createSurface();
+	window.createSurface(*vkDevice.getInstance());
 
 	//4. Found the most suitable GPU in our computer
 	vKphysicalDevice physicalDevice;
 	physicalDevice.pickPhysicalDevice(vkDevice.getInstance());
 
-	//5. Create Logican Device (Interface for our Physical Device and init Queues!
+	//5. Create Logical Device (Interface for our Physical Device and init Queues!
 	vkLogicalDevice logicalDevice;
 	logicalDevice.createLogicalDevice(physicalDevice,vkLayers);
-
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))

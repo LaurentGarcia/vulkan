@@ -41,8 +41,8 @@ protected:
 	std::vector<VkExtensionProperties>	instanceExtensionsProperties;
 
 	//
-	std::vector<const char*>  vulkanExtensions;
-    std::vector<const char*>  vulkanLayersAvailable;
+	std::vector<const char*>  vulkanExtensions = {};
+    std::vector<const char*>  vulkanLayersAvailable = {};
 
 
 private:

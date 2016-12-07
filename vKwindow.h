@@ -24,7 +24,7 @@ public:
 	virtual ~vKwindow();
 
 	bool initWindow(int witdh,int height,char* windowName);
-	void createSurface();
+	void createSurface(VkInstance instance);
 
 	GLFWwindow* getWindow();
 

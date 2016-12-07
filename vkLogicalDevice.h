@@ -21,16 +21,17 @@ public:
 	vkLogicalDevice();
 	virtual ~vkLogicalDevice();
 
-	bool createLogicalDevice(vKphysicalDevice psDevice,vKlayers layers);
-	const VkDevice* getLogicalDevice();
+	void createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers);
 
 private:
 
-	VDeleter<VkDevice>       device{vkDestroyDevice};
-	VkQueue                  graphicsQueue;
-	VkDeviceQueueCreateInfo  queueCreateInfo = {};
-	VkPhysicalDeviceFeatures deviceFeatures  = {};
-	VkDeviceCreateInfo       createInfo      = {};
+	VkDeviceQueueCreateInfo  queueLogicalDeviceCreateInfo = {};
+	VkPhysicalDeviceFeatures logicalDeviceFeatures        = {};
+	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
+	float queuePriority = 1.0f;
+
+	VDeleter<VkDevice> logicalDevice{vkDestroyDevice};
+	VkQueue            graphicQueue;
 };
 
 #endif /* VKLOGICALDEVICE_H_ */

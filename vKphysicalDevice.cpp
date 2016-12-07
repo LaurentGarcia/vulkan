@@ -51,6 +51,8 @@ void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice){
 	for (const auto& device: availablePhysicalDevices ){
 		if(isDeviceSuitable(device))
 		{
+			printf("Physical GPU: OK \n");
+			fflush(stdout);
 			this->physicalDevice = device;
 			break;
 		}

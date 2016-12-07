@@ -42,7 +42,7 @@ bool vKwindow::initWindow(int witdh,int height,char* windowName){
 	return true; //ToDo> error management
 }
 
-void vKwindow::createSurface(){
+void vKwindow::createSurface(VkInstance instance){
 
 	VkResult err = glfwCreateWindowSurface(instance,this->window,nullptr,surface.replace());
 	if (err!= VK_SUCCESS){

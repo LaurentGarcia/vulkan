@@ -31,8 +31,8 @@ public:
 	void pickPhysicalDevice(const VkInstance* vkDevice);
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	VkPhysicalDevice   getPhysicalDevice();
 
-	VkPhysicalDevice getPhysicalDevice();
 
 private:
 
