@@ -14,6 +14,7 @@
 #include "vKphysicalDevice.h"
 #include "vKlayers.h"
 #include "vKwindow.h"
+#include <set>
 
 class vkLogicalDevice {
 
@@ -26,13 +27,13 @@ public:
 
 private:
 
-	VkDeviceQueueCreateInfo  queueLogicalDeviceCreateInfo = {};
 	VkPhysicalDeviceFeatures logicalDeviceFeatures        = {};
 	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
 	float queuePriority = 1.0f;
 
 	VDeleter<VkDevice> logicalDevice{vkDestroyDevice};
 	VkQueue            graphicQueue;
+	VkQueue			   presentQueue;
 };
 
 #endif /* VKLOGICALDEVICE_H_ */

@@ -18,19 +18,26 @@ vkLogicalDevice::~vkLogicalDevice() {
 
 void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers,vKwindow* window){
 
-	VkPhysicalDevice        actualPhysicalDevice = physicalDevice.getPhysicalDevice();
-	vKdevice::QueueFamilyIndices indices = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
+	VkPhysicalDevice             actualPhysicalDevice = physicalDevice.getPhysicalDevice();
+	vKdevice::QueueFamilyIndices indices              = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
 
 	std::vector<const char*> validationLayers = layers.getValidationLayers();
 
-	this->queueLogicalDeviceCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	this->queueLogicalDeviceCreateInfo.queueFamilyIndex = indices.graphicFamily;
-	this->queueLogicalDeviceCreateInfo.queueCount       = 1;
-	this->queueLogicalDeviceCreateInfo.pQueuePriorities = &this->queuePriority;
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set<int> 						 uniqueQueueFamilies = {indices.graphicFamily,indices.presentFamily};
+
+	for (int queueFamily : uniqueQueueFamilies){
+		VkDeviceQueueCreateInfo  queueCreateInfo = {};
+		queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount       = 1;
+		queueCreateInfo.pQueuePriorities = &this->queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	this->createLogicalDeviceInfo.sType                 = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	this->createLogicalDeviceInfo.pQueueCreateInfos     = &this->queueLogicalDeviceCreateInfo;
-	this->createLogicalDeviceInfo.queueCreateInfoCount  = 1;
+	this->createLogicalDeviceInfo.pQueueCreateInfos     = queueCreateInfos.data();
+	this->createLogicalDeviceInfo.queueCreateInfoCount  = (uint32_t)queueCreateInfos.size();
 	this->createLogicalDeviceInfo.pEnabledFeatures      = &this->logicalDeviceFeatures;
 	this->createLogicalDeviceInfo.enabledExtensionCount = 0;
 
@@ -50,4 +57,5 @@ void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlaye
 	}
 
 	vkGetDeviceQueue(this->logicalDevice,indices.graphicFamily,0,&this->graphicQueue);
+	vkGetDeviceQueue(this->logicalDevice,indices.presentFamily,0,&this->presentQueue);
 };
