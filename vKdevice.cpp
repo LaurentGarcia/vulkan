@@ -20,6 +20,7 @@ const VkInstance* vKdevice::getInstance(){
 	return instance.operator &();
 }
 
+
 void vKdevice::fillVkInfo(){
 
 	this->appVkInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -37,36 +38,33 @@ void vKdevice::fillAppVkInfo(){
 	unsigned int glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
 	this->createVkInfo.enabledExtensionCount   = glfwExtensionCount;
 	this->createVkInfo.ppEnabledExtensionNames = glfwExtensions;
 	this->createVkInfo.enabledLayerCount = 0;
-	this->fillExtensionsProperties();
+	//this->fillExtensionsProperties();
 }
 void vKdevice::fillAppVkInfo(vKlayers* vklayersInfo){
-	static auto extensions = vklayersInfo->getRequiredExtensions();
-	static auto layers = vklayersInfo->getValidationLayers();
 
-	this->createVkInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	this->createVkInfo.pApplicationInfo = &this->appVkInfo;
-	this->createVkInfo.enabledExtensionCount = extensions.size();
-	this->createVkInfo.ppEnabledExtensionNames = extensions.data();
+	this->createVkInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	this->createVkInfo.pApplicationInfo        = &this->appVkInfo;
+
+	this->vulkanExtensions       = getRequiredExtensions(vklayersInfo);
+
+	this->createVkInfo.enabledExtensionCount   = this->vulkanExtensions.size();
+	printf("Size for enabledExt Count> %d \n",this->vulkanExtensions.size());
+	this->createVkInfo.ppEnabledExtensionNames = this->vulkanExtensions.data();
+
 	if (vklayersInfo->ValidationLayersActivated()){
-		this->createVkInfo.enabledLayerCount =       layers.size();
-		this->createVkInfo.ppEnabledLayerNames =     layers.data();
+		this->vulkanLayersAvailable            =  vklayersInfo->getValidationLayers();
+		this->createVkInfo.enabledLayerCount   =  vulkanLayersAvailable.size();
+		this->createVkInfo.ppEnabledLayerNames =  vulkanLayersAvailable.data();
+	}
+	else{
+		this->createVkInfo.enabledLayerCount = 0;
 	}
 }
 
-void vKdevice::fillExtensionsProperties(){
-
-	uint32_t extensionCount = 0;
-	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,nullptr);
-	this->extensions.resize(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr,&extensionCount,this->extensions.data());
-	std::cout << "available extensions:" << std::endl;
-	for (const auto& extension : extensions) {
-	    std::cout << "\t" << extension.extensionName << std::endl;
-	}
-}
 
 void vKdevice::setupDebugCallback(){
 
@@ -83,14 +81,17 @@ VkResult vKdevice::initVulkan(){
 
 	this->fillVkInfo();
 	this->fillAppVkInfo();
+
 	return vkCreateInstance(&this->createVkInfo,nullptr,this->instance.replace());
 
 }
 
 VkResult vKdevice::initVulkan(vKlayers* vklayersInfo){
+
 	VkResult result;
+
 	if (vklayersInfo->getLayersEnable()){
-		printf("Init Vulkan with layers.");
+		printf("Init Vulkan with layers.\n");
 		fflush(stdout);
 		this->fillVkInfo();
 		this->fillAppVkInfo(vklayersInfo);
@@ -111,3 +112,22 @@ VkResult vKdevice::initVulkan(vKlayers* vklayersInfo){
 	}
 }
 
+std::vector<const char*> vKdevice::getRequiredExtensions(vKlayers* layers){
+
+	std::vector<const char*> extensions;
+
+	unsigned int glfwExtensionCount = 0;
+	const char** glfwExtensions;
+
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+	for (unsigned int i = 0; i < glfwExtensionCount; i++) {
+		extensions.push_back(glfwExtensions[i]);
+	}
+
+	if (enableValidationLayers) {
+	    extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	}
+
+	return extensions;
+}
