@@ -16,10 +16,10 @@ vkLogicalDevice::~vkLogicalDevice() {
 	// TODO Auto-generated destructor stub
 }
 
-void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers){
+void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers,vKwindow* window){
 
 	VkPhysicalDevice        actualPhysicalDevice = physicalDevice.getPhysicalDevice();
-	vKphysicalDevice::QueueFamilyIndices indices = physicalDevice.findQueueFamilies(actualPhysicalDevice);
+	vKdevice::QueueFamilyIndices indices = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
 
 	std::vector<const char*> validationLayers = layers.getValidationLayers();
 

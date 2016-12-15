@@ -30,26 +30,46 @@ void vKphysicalDevice::enumerateDevices(const VkInstance* vkDevice){
 	vkEnumeratePhysicalDevices(*vkDevice,&deviceCount,this->availablePhysicalDevices.data());
 }
 
-bool vKphysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
+bool vKphysicalDevice::isDeviceSuitable(VkPhysicalDevice device,vKwindow* window) {
 
-	vKphysicalDevice::QueueFamilyIndices indices = findQueueFamilies(device);
+	vKdevice::QueueFamilyIndices indices = findQueueFamilies(device,window);
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures   deviceFeatures;
 
 	vkGetPhysicalDeviceProperties(device,&deviceProperties);
 	vkGetPhysicalDeviceFeatures(device,&deviceFeatures);
 
+	if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+		printf("VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: OK \n");
+		fflush(stdout);
+	};
+	if(deviceFeatures.geometryShader == 1){
+		printf("Geometry Shader: OK \n");
+		fflush(stdout);
+	};
+
+	if(indices.isComplete())
+	{
+		printf("Indices: OK \n");
+		fflush(stdout);
+	}else
+	{
+		printf("Indices not completed, Graphics family: %d, Present Family: %d \n", indices.graphicFamily,indices.presentFamily);
+		fflush(stdout);
+	};
+
+
 	return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
 		   deviceFeatures.geometryShader && indices.isComplete();
 
 }
 
-void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice){
+void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* window){
 
 	this->enumerateDevices(vkDevice);
 
 	for (const auto& device: availablePhysicalDevices ){
-		if(isDeviceSuitable(device))
+		if(isDeviceSuitable(device,window))
 		{
 			printf("Physical GPU: OK \n");
 			fflush(stdout);
@@ -65,9 +85,10 @@ void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice){
 }
 
 
-vKphysicalDevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysicalDevice device){
+vKdevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysicalDevice device,vKwindow* window){
 
-	vKphysicalDevice::QueueFamilyIndices indices;
+
+	vKdevice::QueueFamilyIndices indices;
 
 	uint32_t queueFamilyCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(device,&queueFamilyCount,nullptr);
@@ -75,14 +96,27 @@ vKphysicalDevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysi
 	vkGetPhysicalDeviceQueueFamilyProperties(device,&queueFamilyCount,queueFamilies.data());
 
 	int i = 0;
+
 	for(const auto& queueFamily : queueFamilies){
-		if (queueFamily.queueCount>0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
+		if (queueFamily.queueCount>0 && queueFamily.queueFlags && VK_QUEUE_GRAPHICS_BIT){
 			indices.graphicFamily = i;
-	}
-	if (indices.isComplete()){
-		break;
-	}
-	i++;
+		}
+
+		VkBool32 presentSupport = false;
+
+		vkGetPhysicalDeviceSurfaceSupportKHR(device,i,*window->getSurface(),&presentSupport);
+
+		printf("Device Surface present Support KHR: %d \n", presentSupport);fflush(stdout);
+
+		if(queueFamily.queueCount > 0 && presentSupport){
+			indices.presentFamily = i;
+		}
+
+		if (indices.isComplete()){
+			printf("Indices completed: OK \n");fflush(stdout);
+			break;
+		}
+		i++;
 	}
 	return indices;
 }

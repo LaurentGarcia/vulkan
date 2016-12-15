@@ -13,6 +13,7 @@
 #include "VDeleter.h"
 #include "vKphysicalDevice.h"
 #include "vKlayers.h"
+#include "vKwindow.h"
 
 class vkLogicalDevice {
 
@@ -21,7 +22,7 @@ public:
 	vkLogicalDevice();
 	virtual ~vkLogicalDevice();
 
-	void createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers);
+	void createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers,vKwindow* window);
 
 private:
 

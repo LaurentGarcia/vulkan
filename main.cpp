@@ -54,11 +54,11 @@ int main(void){
 
 	//4. Found the most suitable GPU in our computer
 	vKphysicalDevice physicalDevice;
-	physicalDevice.pickPhysicalDevice(vkDevice.getInstance());
+	physicalDevice.pickPhysicalDevice(vkDevice.getInstance(),&window);
 
 	//5. Create Logical Device (Interface for our Physical Device and init Queues!
 	vkLogicalDevice logicalDevice;
-	logicalDevice.createLogicalDevice(physicalDevice,vkLayers);
+	logicalDevice.createLogicalDevice(physicalDevice,vkLayers,&window);
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))

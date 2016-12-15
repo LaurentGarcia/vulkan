@@ -27,7 +27,9 @@ GLFWwindow* vKwindow::getWindow(){
 
 }
 
-
+const VkSurfaceKHR* vKwindow::getSurface(){
+	return this->surface.operator &();
+};
 bool vKwindow::initWindow(int witdh,int height,char* windowName){
 
 	//Init GLFW

@@ -13,6 +13,7 @@
 	#include <glfw3.h>
 	#include <vector>
 	#include "vKdevice.h"
+	#include "vKwindow.h"
 #endif
 
 class vKphysicalDevice {
@@ -21,16 +22,11 @@ public:
 	vKphysicalDevice();
 	virtual ~vKphysicalDevice();
 
-	struct QueueFamilyIndices{
-			int  graphicFamily = -1;
-			bool isComplete(){
-				return graphicFamily >=0;
-			}
-		};
 
-	void pickPhysicalDevice(const VkInstance* vkDevice);
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	void pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* window);
+
+	vKdevice::QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device,vKwindow* window);
 	VkPhysicalDevice   getPhysicalDevice();
 
 
@@ -41,7 +37,7 @@ private:
 
 	void enumerateDevices(const VkInstance* vkDevice);
 
-	bool isDeviceSuitable(VkPhysicalDevice device);
+	bool isDeviceSuitable(VkPhysicalDevice device,vKwindow* window);
 
 };
 

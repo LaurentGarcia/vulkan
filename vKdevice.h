@@ -25,6 +25,14 @@ public:
 	vKdevice();
 	virtual ~vKdevice();
 
+	struct QueueFamilyIndices{
+				int  graphicFamily = -1;
+				int  presentFamily = -1;
+				bool isComplete(){
+					return graphicFamily >=0 && presentFamily >= 0;
+				}
+	};
+
 	VkResult initVulkan();
 	VkResult initVulkan(vKlayers* vklayersInfo);
 	const VkInstance* getInstance();
