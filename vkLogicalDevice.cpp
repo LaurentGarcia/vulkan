@@ -18,8 +18,9 @@ vkLogicalDevice::~vkLogicalDevice() {
 
 void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlayers layers,vKwindow* window){
 
-	VkPhysicalDevice             actualPhysicalDevice = physicalDevice.getPhysicalDevice();
-	vKdevice::QueueFamilyIndices indices              = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
+	VkPhysicalDevice               actualPhysicalDevice  = physicalDevice.getPhysicalDevice();
+	vKdevice::QueueFamilyIndices   indices               = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
+	const std::vector<const char*> physicalDevExtensions = physicalDevice.getDeviceExtensions();
 
 	std::vector<const char*> validationLayers = layers.getValidationLayers();
 
@@ -35,11 +36,12 @@ void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlaye
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	this->createLogicalDeviceInfo.sType                 = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	this->createLogicalDeviceInfo.pQueueCreateInfos     = queueCreateInfos.data();
-	this->createLogicalDeviceInfo.queueCreateInfoCount  = (uint32_t)queueCreateInfos.size();
-	this->createLogicalDeviceInfo.pEnabledFeatures      = &this->logicalDeviceFeatures;
-	this->createLogicalDeviceInfo.enabledExtensionCount = 0;
+	this->createLogicalDeviceInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	this->createLogicalDeviceInfo.pQueueCreateInfos       = queueCreateInfos.data();
+	this->createLogicalDeviceInfo.queueCreateInfoCount    = (uint32_t)queueCreateInfos.size();
+	this->createLogicalDeviceInfo.pEnabledFeatures        = &this->logicalDeviceFeatures;
+	this->createLogicalDeviceInfo.enabledExtensionCount   = physicalDevExtensions.size();
+	this->createLogicalDeviceInfo.ppEnabledExtensionNames = physicalDevExtensions.data();
 
 	if (enableValidationLayers){
 		this->createLogicalDeviceInfo.enabledLayerCount   = validationLayers.size();
@@ -59,3 +61,5 @@ void vkLogicalDevice::createLogicalDevice(vKphysicalDevice physicalDevice,vKlaye
 	vkGetDeviceQueue(this->logicalDevice,indices.graphicFamily,0,&this->graphicQueue);
 	vkGetDeviceQueue(this->logicalDevice,indices.presentFamily,0,&this->presentQueue);
 };
+
+

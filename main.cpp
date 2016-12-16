@@ -25,8 +25,7 @@
 	#include "vkLogicalDevice.h"
 #endif
 
-const int WIDTH  = 800;
-const int HEIGHT = 600;
+
 char* windowName = {"Vulkan Window"};
 
 int main(void){
@@ -60,6 +59,8 @@ int main(void){
 	vkLogicalDevice logicalDevice;
 	logicalDevice.createLogicalDevice(physicalDevice,vkLayers,&window);
 
+	//Creatubg Swap Chain
+	physicalDevice.createSwapChain(physicalDevice.getPhysicalDevice(),&window,window.getSurface());
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{

@@ -26,7 +26,7 @@ public:
 	bool initWindow(int witdh,int height,char* windowName);
 	void createSurface(VkInstance instance);
 
-	GLFWwindow*   getWindow();
+	GLFWwindow*         getWindow();
 	const VkSurfaceKHR* getSurface();
 
 	static void error_callback(int error, const char* description);
