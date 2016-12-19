@@ -60,9 +60,16 @@ private:
 	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
 	float queuePriority = 1.0f;
 
-	VDeleter<VkDevice> logicalDevice{vkDestroyDevice};
+	VDeleter<VkDevice>       logicalDevice{vkDestroyDevice};
+	VDeleter<VkSwapchainKHR> swapChain    {logicalDevice, vkDestroySwapchainKHR};
+
 	VkQueue            graphicQueue;
 	VkQueue			   presentQueue;
+
+	std::vector<VkImage> swapChainImages;
+	VkFormat             swapChainImageFormat;
+	VkExtent2D           swapChainExtent;
+
 };
 
 #endif /* VKDEVICEEXTENSION_H_ */

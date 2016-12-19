@@ -10,11 +10,11 @@
 
 
 
-vKDeviceExtension::vKphysicalDevice() {
+vKDeviceExtension::vKDeviceExtension() {
 	// TODO Auto-generated constructor stub
 }
 
-vKDeviceExtension::~vKphysicalDevice() {
+vKDeviceExtension::~vKDeviceExtension() {
 	// TODO Auto-generated destructor stub
 }
 
@@ -127,7 +127,7 @@ bool vKDeviceExtension::checkDeviceExtensionSupport(VkPhysicalDevice device){
 	return requiredExtension.empty(); //ToDo
 };
 
-const std::vector<const char*> vKphysicalDevice::getDeviceExtensions(){
+const std::vector<const char*> vKDeviceExtension::getDeviceExtensions(){
 	return this->deviceExtensions;
 };
 
@@ -234,8 +234,20 @@ void vKDeviceExtension::createSwapChain(VkPhysicalDevice device,vKwindow* window
 	this->createChainInfo.clipped         = VK_TRUE;
 	this->createChainInfo.oldSwapchain    = VK_NULL_HANDLE;
 
+	if (vkCreateSwapchainKHR(logicalDevice, &this->createChainInfo, nullptr, swapChain.replace()) != VK_SUCCESS) {
+	    throw std::runtime_error("failed to create swap chain!");
+	}else{
+		printf("Init SwapChain for GPU: OK \n");fflush(stdout);
+	}
 
+	// now Init the swapChainImages to render
 
+	vkGetSwapchainImagesKHR(logicalDevice,swapChain,&imageCount,nullptr);
+	this->swapChainImages.resize(imageCount);
+	vkGetSwapchainImagesKHR(logicalDevice,swapChain,&imageCount,swapChainImages.data());
+
+	this->swapChainImageFormat = surfaceFormat.format;
+	this->swapChainExtent      = extent;
 
 
 };

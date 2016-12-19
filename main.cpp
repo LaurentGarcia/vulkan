@@ -22,7 +22,6 @@
 	#include "vKdevice.h"
 	#include "vKlayers.h"
 	#include "vKDeviceExtension.h"
-	#include "vkLogicalDevice.h"
 #endif
 
 
@@ -52,15 +51,15 @@ int main(void){
 	window.createSurface(*vkDevice.getInstance());
 
 	//4. Found the most suitable GPU in our computer
-	vKphysicalDevice physicalDevice;
-	physicalDevice.pickPhysicalDevice(vkDevice.getInstance(),&window);
+	vKDeviceExtension computerDevice;
+	computerDevice.pickPhysicalDevice(vkDevice.getInstance(),&window);
 
 	//5. Create Logical Device (Interface for our Physical Device and init Queues!
-	vkLogicalDevice logicalDevice;
-	logicalDevice.createLogicalDevice(physicalDevice,vkLayers,&window);
+
+	computerDevice.createLogicalDevice(computerDevice,vkLayers,&window);
 
 	//Creatubg Swap Chain
-	physicalDevice.createSwapChain(physicalDevice.getPhysicalDevice(),&window,window.getSurface());
+	computerDevice.createSwapChain(computerDevice.getPhysicalDevice(),&window,window.getSurface());
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{
