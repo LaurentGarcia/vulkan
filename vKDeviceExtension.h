@@ -40,7 +40,7 @@ public:
 	const std::vector<const char*> getDeviceExtensions();
 	void createSwapChain(VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
 	void createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
-
+	void createImageViews();
 
 private:
 
@@ -69,6 +69,8 @@ private:
 	std::vector<VkImage> swapChainImages;
 	VkFormat             swapChainImageFormat;
 	VkExtent2D           swapChainExtent;
+
+	std::vector<VDeleter<VkImageView>> swapChainImageViews;
 
 };
 

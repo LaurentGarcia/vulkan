@@ -61,6 +61,8 @@ int main(void){
 	//Creatubg Swap Chain
 	computerDevice.createSwapChain(computerDevice.getPhysicalDevice(),&window,window.getSurface());
 
+	computerDevice.createImageViews();
+
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{
 		glfwPollEvents();
