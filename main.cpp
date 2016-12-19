@@ -21,7 +21,7 @@
 	#include "vKwindow.h"
 	#include "vKdevice.h"
 	#include "vKlayers.h"
-	#include "vKphysicalDevice.h"
+	#include "vKDeviceExtension.h"
 	#include "vkLogicalDevice.h"
 #endif
 

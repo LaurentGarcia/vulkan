@@ -5,20 +5,21 @@
  *      Author: lcarro
  */
 
-#include "vKphysicalDevice.h"
+
+#include "vKDeviceExtension.h"
 
 
 
-vKphysicalDevice::vKphysicalDevice() {
+vKDeviceExtension::vKphysicalDevice() {
 	// TODO Auto-generated constructor stub
 }
 
-vKphysicalDevice::~vKphysicalDevice() {
+vKDeviceExtension::~vKphysicalDevice() {
 	// TODO Auto-generated destructor stub
 }
 
 
-void vKphysicalDevice::enumerateDevices(const VkInstance* vkDevice){
+void vKDeviceExtension::enumerateDevices(const VkInstance* vkDevice){
 
 	uint32_t deviceCount = 0;\
 	vkEnumeratePhysicalDevices(*vkDevice,&deviceCount,nullptr);
@@ -30,7 +31,7 @@ void vKphysicalDevice::enumerateDevices(const VkInstance* vkDevice){
 	vkEnumeratePhysicalDevices(*vkDevice,&deviceCount,this->availablePhysicalDevices.data());
 }
 
-bool vKphysicalDevice::isDeviceSuitable(VkPhysicalDevice device,vKwindow* window) {
+bool vKDeviceExtension::isDeviceSuitable(VkPhysicalDevice device,vKwindow* window) {
 
 	vKdevice::QueueFamilyIndices indices = findQueueFamilies(device,window);
 
@@ -46,7 +47,7 @@ bool vKphysicalDevice::isDeviceSuitable(VkPhysicalDevice device,vKwindow* window
 
 }
 
-void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* window){
+void vKDeviceExtension::pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* window){
 
 	this->enumerateDevices(vkDevice);
 
@@ -67,7 +68,7 @@ void vKphysicalDevice::pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* w
 }
 
 
-vKdevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysicalDevice device,vKwindow* window){
+vKdevice::QueueFamilyIndices vKDeviceExtension::findQueueFamilies(VkPhysicalDevice device,vKwindow* window){
 
 
 	vKdevice::QueueFamilyIndices indices;
@@ -103,12 +104,12 @@ vKdevice::QueueFamilyIndices vKphysicalDevice::findQueueFamilies(VkPhysicalDevic
 	return indices;
 }
 
-VkPhysicalDevice vKphysicalDevice::getPhysicalDevice(){
+VkPhysicalDevice vKDeviceExtension::getPhysicalDevice(){
 	return this->physicalDevice;
 
 };
 
-bool vKphysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device){
+bool vKDeviceExtension::checkDeviceExtensionSupport(VkPhysicalDevice device){
 
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device,nullptr,&extensionCount,nullptr);
@@ -131,7 +132,7 @@ const std::vector<const char*> vKphysicalDevice::getDeviceExtensions(){
 };
 
 
-vKphysicalDevice::SwapChainSupportDetails vKphysicalDevice::querySwapChainSupport(VkPhysicalDevice device,vKwindow* window){
+vKDeviceExtension::SwapChainSupportDetails vKDeviceExtension::querySwapChainSupport(VkPhysicalDevice device,vKwindow* window){
 
 	const VkSurfaceKHR* surface = window->getSurface();
 	SwapChainSupportDetails details;
@@ -191,7 +192,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities){
 	}
 }
 
-void vKphysicalDevice::createSwapChain(VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface){
+void vKDeviceExtension::createSwapChain(VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface){
 
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device, window);
 
@@ -239,6 +240,51 @@ void vKphysicalDevice::createSwapChain(VkPhysicalDevice device,vKwindow* window,
 
 };
 
+void vKDeviceExtension::createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window){
+
+	VkPhysicalDevice               actualPhysicalDevice  = physicalDevice.getPhysicalDevice();
+	vKdevice::QueueFamilyIndices   indices               = physicalDevice.findQueueFamilies(actualPhysicalDevice,window);
+	const std::vector<const char*> physicalDevExtensions = physicalDevice.getDeviceExtensions();
+
+	std::vector<const char*> validationLayers = layers.getValidationLayers();
+
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set<int> 						 uniqueQueueFamilies = {indices.graphicFamily,indices.presentFamily};
+
+	for (int queueFamily : uniqueQueueFamilies){
+		VkDeviceQueueCreateInfo  queueCreateInfo = {};
+		queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount       = 1;
+		queueCreateInfo.pQueuePriorities = &this->queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
+
+	this->createLogicalDeviceInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	this->createLogicalDeviceInfo.pQueueCreateInfos       = queueCreateInfos.data();
+	this->createLogicalDeviceInfo.queueCreateInfoCount    = (uint32_t)queueCreateInfos.size();
+	this->createLogicalDeviceInfo.pEnabledFeatures        = &this->logicalDeviceFeatures;
+	this->createLogicalDeviceInfo.enabledExtensionCount   = physicalDevExtensions.size();
+	this->createLogicalDeviceInfo.ppEnabledExtensionNames = physicalDevExtensions.data();
+
+	if (enableValidationLayers){
+		this->createLogicalDeviceInfo.enabledLayerCount   = validationLayers.size();
+		this->createLogicalDeviceInfo.ppEnabledLayerNames = validationLayers.data();
+	}
+	else{
+		this->createLogicalDeviceInfo.enabledLayerCount = 0;
+	};
+
+	if (vkCreateDevice(actualPhysicalDevice,&this->createLogicalDeviceInfo,nullptr,this->logicalDevice.replace())!=VK_SUCCESS){
+	    throw std::runtime_error("failed to create logical device!");
+	}
+	else{
+		printf("Vulkan Logical Device:  0K \n");
+	}
+
+	vkGetDeviceQueue(this->logicalDevice,indices.graphicFamily,0,&this->graphicQueue);
+	vkGetDeviceQueue(this->logicalDevice,indices.presentFamily,0,&this->presentQueue);
+};
 
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features

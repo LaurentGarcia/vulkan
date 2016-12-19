@@ -5,8 +5,8 @@
  *      Author: lcarro
  */
 
-#ifndef VKPHYSICALDEVICE_H_
-#define VKPHYSICALDEVICE_H_
+#ifndef VKDEVICEEXTENSION_H_
+#define VKDEVICEEXTENSION_H_
 
 #ifdef __linux__
 	#define GLFW_INCLUDE_VULKAN
@@ -21,11 +21,11 @@
 const int WIDTH  = 800;
 const int HEIGHT = 600;
 
-class vKphysicalDevice : public vKdevice{
+class vKDeviceExtension : public vKdevice{
 public:
 
-	vKphysicalDevice();
-	virtual ~vKphysicalDevice();
+	vKDeviceExtension();
+	virtual ~vKDeviceExtension();
 
 	struct SwapChainSupportDetails {
 	    VkSurfaceCapabilitiesKHR capabilities;
@@ -39,6 +39,8 @@ public:
 	VkPhysicalDevice   			   getPhysicalDevice();
 	const std::vector<const char*> getDeviceExtensions();
 	void createSwapChain(VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
+	void createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
+
 
 private:
 
@@ -53,7 +55,14 @@ private:
 
 	VkSwapchainCreateInfoKHR createChainInfo = {};
 
+	//logicalDevice Features
+	VkPhysicalDeviceFeatures logicalDeviceFeatures        = {};
+	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
+	float queuePriority = 1.0f;
 
+	VDeleter<VkDevice> logicalDevice{vkDestroyDevice};
+	VkQueue            graphicQueue;
+	VkQueue			   presentQueue;
 };
 
-#endif /* VKPHYSICALDEVICE_H_ */
+#endif /* VKDEVICEEXTENSION_H_ */
