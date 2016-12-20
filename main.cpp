@@ -22,6 +22,7 @@
 	#include "vKdevice.h"
 	#include "vKlayers.h"
 	#include "vKDeviceExtension.h"
+	#include "vKGraphicPipeline.h"
 #endif
 
 
@@ -45,23 +46,21 @@ int main(void){
 	resultInitVulkan = vkDevice.initVulkan(&vkLayers);
 	printf("Init Vulkan: %d, 0 = Succesfull\n", resultInitVulkan);
 	fflush(stdout);
-
-
 	//4. Create SurfACE
 	window.createSurface(*vkDevice.getInstance());
-
 	//4. Found the most suitable GPU in our computer
 	vKDeviceExtension computerDevice;
 	computerDevice.pickPhysicalDevice(vkDevice.getInstance(),&window);
-
 	//5. Create Logical Device (Interface for our Physical Device and init Queues!
-
 	computerDevice.createLogicalDevice(computerDevice,vkLayers,&window);
-
 	//Creatubg Swap Chain
 	computerDevice.createSwapChain(computerDevice.getPhysicalDevice(),&window,window.getSurface());
-
 	computerDevice.createImageViews();
+
+	//Graphic Pipeline
+	vKGraphicPipeline graphicPipeline;
+	graphicPipeline.createGraphicPipeline();
+
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{
