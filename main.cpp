@@ -57,7 +57,9 @@ int main(void){
 	computerDevice.createImageViews();
 
 	//Graphic Pipeline
+	computerDevice.createRenderPass();
 	computerDevice.createGraphicPipeline();
+	computerDevice.createFramebuffers();
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))

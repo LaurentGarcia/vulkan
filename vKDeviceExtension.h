@@ -42,13 +42,19 @@ public:
 	void createSwapChain    (VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
 	void createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
 	void createImageViews();
-	void                     createGraphicPipeline();
-
+	void createRenderPass();
+	void createGraphicPipeline();
+	void createFramebuffers();
 
 protected:
 
-	VDeleter<VkDevice>       logicalDevice   {vkDestroyDevice};
-	VDeleter<VkSwapchainKHR> swapChain       {logicalDevice, vkDestroySwapchainKHR};
+	VDeleter<VkDevice>         			 logicalDevice   {vkDestroyDevice};
+	VDeleter<VkSwapchainKHR>   			 swapChain       {logicalDevice, vkDestroySwapchainKHR};
+	VDeleter<VkPipelineLayout> 			 pipelineLayout  {logicalDevice, vkDestroyPipelineLayout};
+	VDeleter<VkRenderPass>     			 renderPass      {logicalDevice, vkDestroyRenderPass};
+	VDeleter<VkPipeline>                 graphicsPipeline{logicalDevice, vkDestroyPipeline};
+	std::vector<VDeleter<VkFramebuffer>> swapChainFramebuffers;
+
 
 private:
 
