@@ -328,6 +328,69 @@ void vKDeviceExtension::createImageViews(){
 		}
 	};
 }
+
+
+void vKDeviceExtension::createGraphicPipeline(){
+
+	auto vertShaderCode = this->loadShaders("Shaders/vert.spv");
+	auto fragShaderCode = this->loadShaders("Shaders/frag.spv");
+
+	VDeleter<VkShaderModule> vertShaderModule{logicalDevice, vkDestroyShaderModule};
+	VDeleter<VkShaderModule> fragShaderModule{logicalDevice, vkDestroyShaderModule};
+
+	this->createShaderModule(vertShaderCode,vertShaderModule);
+	this->createShaderModule(fragShaderCode,fragShaderModule);
+
+	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+	vertShaderStageInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	vertShaderStageInfo.stage  = VK_SHADER_STAGE_VERTEX_BIT;
+	vertShaderStageInfo.module = vertShaderModule;
+	vertShaderStageInfo.pName  = "main";
+	VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	fragShaderStageInfo.module = fragShaderModule;
+	fragShaderStageInfo.pName = "main";
+
+	VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,fragShaderStageInfo};
+};
+
+
+const std::vector<char> vKDeviceExtension::loadShaders(const std::string& filename){
+
+	std::ifstream file(filename,std::ios::ate | std::ios::binary);
+	if (!file.is_open()){
+		throw std::runtime_error("Failed to open the Shaders code");
+	}else{
+		std::cout << "Loaded Shader: " << filename <<" \n";fflush(stdout);
+	}
+
+	size_t fileSize = (size_t)file.tellg();
+	std::vector<char> buffer(fileSize);
+	file.seekg(0);
+	file.read(buffer.data(),fileSize);
+	file.close();
+
+	return buffer;
+
+};
+
+void vKDeviceExtension::createShaderModule(const std::vector<char>& code,VDeleter<VkShaderModule>& shaderModule){
+
+	VkShaderModuleCreateInfo createShaderInfo = {};
+	createShaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+
+
+	createShaderInfo.codeSize = code.size();
+	createShaderInfo.pCode    = (uint32_t*) code.data();
+
+	if (vkCreateShaderModule(logicalDevice,&createShaderInfo,nullptr,shaderModule.replace()) != VK_SUCCESS){
+		throw std::runtime_error("Failure creating Shader Module");
+	}
+
+
+};
+
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features
 

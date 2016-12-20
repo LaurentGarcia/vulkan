@@ -16,6 +16,7 @@
 	#include <set>
 	#include <vector>
 	#include <algorithm>
+	#include <fstream>
 #endif
 
 const int WIDTH  = 800;
@@ -38,9 +39,16 @@ public:
 	vKdevice::QueueFamilyIndices   findQueueFamilies(VkPhysicalDevice device,vKwindow* window);
 	VkPhysicalDevice   			   getPhysicalDevice();
 	const std::vector<const char*> getDeviceExtensions();
-	void createSwapChain(VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
+	void createSwapChain    (VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
 	void createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
 	void createImageViews();
+	void                     createGraphicPipeline();
+
+
+protected:
+
+	VDeleter<VkDevice>       logicalDevice   {vkDestroyDevice};
+	VDeleter<VkSwapchainKHR> swapChain       {logicalDevice, vkDestroySwapchainKHR};
 
 private:
 
@@ -52,7 +60,6 @@ private:
 	bool                    isDeviceSuitable           (VkPhysicalDevice device,vKwindow* window);
 	bool                    checkDeviceExtensionSupport(VkPhysicalDevice device);
 	SwapChainSupportDetails querySwapChainSupport      (VkPhysicalDevice device, vKwindow* window);
-
 	VkSwapchainCreateInfoKHR createChainInfo = {};
 
 	//logicalDevice Features
@@ -60,8 +67,10 @@ private:
 	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
 	float queuePriority = 1.0f;
 
-	VDeleter<VkDevice>       logicalDevice{vkDestroyDevice};
-	VDeleter<VkSwapchainKHR> swapChain    {logicalDevice, vkDestroySwapchainKHR};
+	//Creating Shaders
+	const std::vector<char>  loadShaders          (const std::string& filename);
+	void			         createShaderModule   (const std::vector<char>& code,
+												   VDeleter<VkShaderModule>& shaderModule);
 
 	VkQueue            graphicQueue;
 	VkQueue			   presentQueue;

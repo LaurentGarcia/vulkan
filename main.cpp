@@ -22,7 +22,6 @@
 	#include "vKdevice.h"
 	#include "vKlayers.h"
 	#include "vKDeviceExtension.h"
-	#include "vKGraphicPipeline.h"
 #endif
 
 
@@ -58,8 +57,7 @@ int main(void){
 	computerDevice.createImageViews();
 
 	//Graphic Pipeline
-	vKGraphicPipeline graphicPipeline;
-	graphicPipeline.createGraphicPipeline();
+	computerDevice.createGraphicPipeline();
 
 
 	while (!glfwWindowShouldClose(window.getWindow()))
