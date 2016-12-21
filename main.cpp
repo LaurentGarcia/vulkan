@@ -62,12 +62,15 @@ int main(void){
 	computerDevice.createFramebuffers();
 	computerDevice.createCommandPool(computerDevice.getPhysicalDevice(),&window);
 	computerDevice.createCommandBuffers();
+	computerDevice.createSemaphores();
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{
 		glfwPollEvents();
-
+		computerDevice.drawFrame();
 	};
+
+	computerDevice.deviceWaitIdle();
 
 	return 0;
 }

@@ -49,6 +49,10 @@ public:
 	void createFramebuffers();
 	void createCommandPool     (VkPhysicalDevice device,vKwindow* window);
 	void createCommandBuffers();
+	void createSemaphores();
+	void drawFrame();
+	void deviceWaitIdle();
+	void recreateSwapChain();
 
 protected:
 
@@ -60,7 +64,8 @@ protected:
 	std::vector<VDeleter<VkFramebuffer>> swapChainFramebuffers;
 	VDeleter<VkCommandPool>              commandPool     {logicalDevice, vkDestroyCommandPool};
 	std::vector<VkCommandBuffer>         commandBuffers;
-
+	VDeleter<VkSemaphore> 				 imageAvailableSemaphore{logicalDevice, vkDestroySemaphore};
+	VDeleter<VkSemaphore> 				 renderFinishedSemaphore{logicalDevice, vkDestroySemaphore};
 private:
 
 	const std::vector<const char*>       deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -82,6 +87,7 @@ private:
 	VkFormat             			   swapChainImageFormat;
 	VkExtent2D           			   swapChainExtent;
 	std::vector<VDeleter<VkImageView>> swapChainImageViews;
+
 
 	VkSwapchainCreateInfoKHR createChainInfo              = {};
 	VkPhysicalDeviceFeatures logicalDeviceFeatures        = {};

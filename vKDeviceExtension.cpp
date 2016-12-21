@@ -357,6 +357,17 @@ void vKDeviceExtension::createRenderPass(){
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 
+	VkSubpassDependency dependency    = {};
+	dependency.srcSubpass      		  = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass			  = 0;
+	dependency.srcStageMask			  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask		  = 0;
+	dependency.dstStageMask     	  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask		  = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	renderPassInfo.dependencyCount	  = 1;
+	renderPassInfo.pDependencies	  = &dependency;
+
 	if (vkCreateRenderPass(logicalDevice,&renderPassInfo,nullptr,renderPass.replace())!= VK_SUCCESS){
 		throw std::runtime_error("Unable to create the render Pass");
 	}
@@ -625,8 +636,79 @@ void vKDeviceExtension::createCommandBuffers(){
 	}
 };
 
+void vKDeviceExtension::createSemaphores(){
+	VkSemaphoreCreateInfo semaphoreInfo = {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	if ( vkCreateSemaphore(logicalDevice,&semaphoreInfo,nullptr,this->imageAvailableSemaphore.replace()) ||
+		 vkCreateSemaphore(logicalDevice,&semaphoreInfo,nullptr,this->renderFinishedSemaphore.replace()) != VK_SUCCESS){
+		throw std::runtime_error("Unable to Create Vulkan Semaphores \n");
+	}else{
+		printf("Initializing Vulkan Semaphores: OK\n");fflush(stdout);
+	}
+};
+void vKDeviceExtension::drawFrame(){
+	u_int32_t imageIndex;
+	vkAcquireNextImageKHR(logicalDevice,swapChain,std::numeric_limits<u_int64_t>::max(),this->imageAvailableSemaphore,
+						  VK_NULL_HANDLE,&imageIndex);
+
+	VkSubmitInfo submitInfo           = {};
+	submitInfo.sType                  = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[]      = {imageAvailableSemaphore};
+	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+	submitInfo.waitSemaphoreCount     = 1;
+	submitInfo.pWaitSemaphores        = waitSemaphores;
+	submitInfo.pWaitDstStageMask      = waitStages;
+	submitInfo.commandBufferCount     = 1;
+	submitInfo.pCommandBuffers        = &commandBuffers[imageIndex];
+
+	VkSemaphore signalSemaphores[]    = {renderFinishedSemaphore};
+	submitInfo.signalSemaphoreCount   = 1;
+	submitInfo.pSignalSemaphores      = signalSemaphores;
+
+	if (vkQueueSubmit(graphicQueue,1,&submitInfo,VK_NULL_HANDLE) != VK_SUCCESS  ){
+	    throw std::runtime_error("failed to submit draw command buffer!");
+	}
+
+	VkPresentInfoKHR presentInfo 	  = {};
+	presentInfo.sType 				  = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount    = 1;
+	presentInfo.pWaitSemaphores		  = signalSemaphores;
+
+	VkSwapchainKHR swapChains[]		  = {swapChain};
+
+	presentInfo.swapchainCount        = 1;
+	presentInfo.pSwapchains			  = swapChains;
+	presentInfo.pImageIndices         = &imageIndex;
+	presentInfo.pResults		      = nullptr;
+
+	vkQueuePresentKHR(presentQueue,&presentInfo);
+
+};
+
+
+void vKDeviceExtension::deviceWaitIdle(){
+	vkDeviceWaitIdle(logicalDevice);
+};
+
+
+void vKDeviceExtension::recreateSwapChain(){
+	deviceWaitIdle();
+
+	createS
+};
+
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features
+
+
+
+
+
+
+
 
 
 
