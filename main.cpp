@@ -60,7 +60,8 @@ int main(void){
 	computerDevice.createRenderPass();
 	computerDevice.createGraphicPipeline();
 	computerDevice.createFramebuffers();
-
+	computerDevice.createCommandPool(computerDevice.getPhysicalDevice(),&window);
+	computerDevice.createCommandBuffers();
 
 	while (!glfwWindowShouldClose(window.getWindow()))
 	{

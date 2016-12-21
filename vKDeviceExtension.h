@@ -34,17 +34,21 @@ public:
 	    std::vector<VkPresentModeKHR> presentModes;
 	};
 
-	void pickPhysicalDevice(const VkInstance* vkDevice,vKwindow* window);
+
 
 	vKdevice::QueueFamilyIndices   findQueueFamilies(VkPhysicalDevice device,vKwindow* window);
 	VkPhysicalDevice   			   getPhysicalDevice();
 	const std::vector<const char*> getDeviceExtensions();
-	void createSwapChain    (VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
-	void createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
+
+	void pickPhysicalDevice    (const VkInstance* vkDevice,vKwindow* window);
+	void createSwapChain       (VkPhysicalDevice device,vKwindow* window,const VkSurfaceKHR* surface);
+	void createLogicalDevice   (vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window);
 	void createImageViews();
 	void createRenderPass();
 	void createGraphicPipeline();
 	void createFramebuffers();
+	void createCommandPool     (VkPhysicalDevice device,vKwindow* window);
+	void createCommandBuffers();
 
 protected:
 
@@ -54,7 +58,8 @@ protected:
 	VDeleter<VkRenderPass>     			 renderPass      {logicalDevice, vkDestroyRenderPass};
 	VDeleter<VkPipeline>                 graphicsPipeline{logicalDevice, vkDestroyPipeline};
 	std::vector<VDeleter<VkFramebuffer>> swapChainFramebuffers;
-
+	VDeleter<VkCommandPool>              commandPool     {logicalDevice, vkDestroyCommandPool};
+	std::vector<VkCommandBuffer>         commandBuffers;
 
 private:
 
@@ -62,31 +67,26 @@ private:
 	VkPhysicalDevice                     physicalDevice = VK_NULL_HANDLE;
 	std::vector<VkPhysicalDevice>        availablePhysicalDevices = {};
 
-	void                    enumerateDevices           (const VkInstance* vkDevice);
-	bool                    isDeviceSuitable           (VkPhysicalDevice device,vKwindow* window);
-	bool                    checkDeviceExtensionSupport(VkPhysicalDevice device);
-	SwapChainSupportDetails querySwapChainSupport      (VkPhysicalDevice device, vKwindow* window);
-	VkSwapchainCreateInfoKHR createChainInfo = {};
 
-	//logicalDevice Features
+	void                     enumerateDevices           (const VkInstance* vkDevice);
+	bool                     isDeviceSuitable           (VkPhysicalDevice device,vKwindow* window);
+	bool                     checkDeviceExtensionSupport(VkPhysicalDevice device);
+	SwapChainSupportDetails  querySwapChainSupport      (VkPhysicalDevice device, vKwindow* window);
+	const std::vector<char>  loadShaders                (const std::string& filename);
+	void			         createShaderModule         (const std::vector<char>& code,
+												         VDeleter<VkShaderModule>& shaderModule);
+
+	VkQueue              			   graphicQueue;
+	VkQueue			     			   presentQueue;
+	std::vector<VkImage> 			   swapChainImages;
+	VkFormat             			   swapChainImageFormat;
+	VkExtent2D           			   swapChainExtent;
+	std::vector<VDeleter<VkImageView>> swapChainImageViews;
+
+	VkSwapchainCreateInfoKHR createChainInfo              = {};
 	VkPhysicalDeviceFeatures logicalDeviceFeatures        = {};
 	VkDeviceCreateInfo       createLogicalDeviceInfo      = {};
 	float queuePriority = 1.0f;
-
-	//Creating Shaders
-	const std::vector<char>  loadShaders          (const std::string& filename);
-	void			         createShaderModule   (const std::vector<char>& code,
-												   VDeleter<VkShaderModule>& shaderModule);
-
-	VkQueue            graphicQueue;
-	VkQueue			   presentQueue;
-
-	std::vector<VkImage> swapChainImages;
-	VkFormat             swapChainImageFormat;
-	VkExtent2D           swapChainExtent;
-
-	std::vector<VDeleter<VkImageView>> swapChainImageViews;
-
 };
 
 #endif /* VKDEVICEEXTENSION_H_ */
