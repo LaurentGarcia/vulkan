@@ -13,7 +13,7 @@
 vKDeviceExtension::vKDeviceExtension(vKwindow* window) {
 
 	this->window = window;
-	//glfwSetWindowSizeCallback(window->getWindow(),vKDeviceExtension::onWindowResized);
+	glfwSetWindowSizeCallback(window->getWindow(),vKDeviceExtension::onWindowResized);
 	// TODO Auto-generated constructor stub
 }
 
@@ -235,14 +235,18 @@ void vKDeviceExtension::createSwapChain(VkPhysicalDevice device,vKwindow* window
 	this->createChainInfo.compositeAlpha  = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	this->createChainInfo.presentMode     = presentMode;
 	this->createChainInfo.clipped         = VK_TRUE;
-	this->createChainInfo.oldSwapchain    = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(logicalDevice, &this->createChainInfo, nullptr, swapChain.replace()) != VK_SUCCESS) {
+	VkSwapchainKHR oldSwapChain 		  = this->swapChain;
+	this->createChainInfo.oldSwapchain    = oldSwapChain;
+
+	VkSwapchainKHR newSwapChain;
+	if (vkCreateSwapchainKHR(logicalDevice, &this->createChainInfo, nullptr, &newSwapChain) != VK_SUCCESS) {
 	    throw std::runtime_error("failed to create swap chain!");
 	}else{
 		printf("Init SwapChain for GPU: OK \n");fflush(stdout);
 	}
 
+	this->swapChain = newSwapChain;
 	// now Init the swapChainImages to render
 
 	vkGetSwapchainImagesKHR(logicalDevice,swapChain,&imageCount,nullptr);
@@ -598,6 +602,9 @@ void vKDeviceExtension::createCommandPool(VkPhysicalDevice device,vKwindow* wind
 
 void vKDeviceExtension::createCommandBuffers(){
 
+	if (this->commandBuffers.size()>0){
+		vkFreeCommandBuffers(this->logicalDevice,commandPool,commandBuffers.size(),commandBuffers.data());
+	}
 	commandBuffers.resize(swapChainFramebuffers.size());
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -652,8 +659,17 @@ void vKDeviceExtension::createSemaphores(){
 	}
 };
 void vKDeviceExtension::drawFrame(){
+
 	u_int32_t imageIndex;
-	vkAcquireNextImageKHR(this->logicalDevice, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	VkResult result = vkAcquireNextImageKHR(this->logicalDevice, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR){
+		recreateSwapChain();
+		return;
+	}else if ( result!= VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
+        throw std::runtime_error("failed to acquire swap chain image!");
+	}
 
 	VkSubmitInfo submitInfo           = {};
 	submitInfo.sType                  = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -687,11 +703,13 @@ void vKDeviceExtension::drawFrame(){
 	presentInfo.pImageIndices         = &imageIndex;
 	presentInfo.pResults		      = nullptr;
 
-	VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
-	if (result != VK_SUCCESS) {
-	    throw std::runtime_error("failed to present swap chain image!");
-	}
+	 if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+		 recreateSwapChain();
+	 } else if (result != VK_SUCCESS) {
+		 throw std::runtime_error("failed to present swap chain image!");
+	 }
 };
 
 
@@ -705,6 +723,22 @@ void vKDeviceExtension::deviceWaitIdle(){
 vKwindow* vKDeviceExtension::getWindow(){
 	return this->window;
 };
+
+
+
+void vKDeviceExtension::recreateSwapChain(){
+
+	vkDeviceWaitIdle(logicalDevice);
+
+	createSwapChain(this->physicalDevice,this->window,this->window->getSurface());
+	createImageViews();
+	createRenderPass();
+	createGraphicPipeline();
+	createFramebuffers();
+	createCommandBuffers();
+}
+
+
 
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features

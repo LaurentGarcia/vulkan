@@ -34,11 +34,11 @@ public:
 	    std::vector<VkPresentModeKHR> presentModes;
 	};
 
-//	static void onWindowResized(GLFWwindow* window, int width, int height) {
-//		    if (width == 0 || height == 0) return;
-//		    vKDeviceExtension* app = reinterpret_cast<vKDeviceExtension*>(glfwGetWindowUserPointer(window));
-//		    app->recreateSwapChain(app->getWindow());
-//	};
+	static void onWindowResized(GLFWwindow* window, int width, int height) {
+		    if (width == 0 || height == 0) return;
+		    vKDeviceExtension* app = reinterpret_cast<vKDeviceExtension*>(glfwGetWindowUserPointer(window));
+		    app->recreateSwapChain();
+	};
 
 	vKdevice::QueueFamilyIndices   findQueueFamilies(VkPhysicalDevice device,vKwindow* window);
 	VkPhysicalDevice   			   getPhysicalDevice();
@@ -56,7 +56,7 @@ public:
 	void createSemaphores();
 	void drawFrame();
 	void deviceWaitIdle();
-	void recreateSwapChain(vKwindow* window);
+	void recreateSwapChain(VkPhysicalDevice physicalDevice);
 	vKwindow* getWindow();
 protected:
 
