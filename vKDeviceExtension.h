@@ -56,7 +56,7 @@ public:
 	void createSemaphores();
 	void drawFrame();
 	void deviceWaitIdle();
-	void recreateSwapChain(VkPhysicalDevice physicalDevice);
+	void recreateSwapChain();
 	vKwindow* getWindow();
 protected:
 
