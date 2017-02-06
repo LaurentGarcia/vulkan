@@ -36,10 +36,10 @@ bool vKwindow::initWindow(int witdh,int height,char* windowName){
 	glfwInit();
 	glfwSetErrorCallback(error_callback);
 	glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);
 
 	// Creating window
 	this->window = glfwCreateWindow(witdh,height,windowName,nullptr,nullptr);
+	glfwSetWindowUserPointer(window,this);
 
 	return true; //ToDo> error management
 }

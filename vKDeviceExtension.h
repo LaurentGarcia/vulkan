@@ -25,7 +25,7 @@ const int HEIGHT = 600;
 class vKDeviceExtension : public vKdevice{
 public:
 
-	vKDeviceExtension();
+	vKDeviceExtension(vKwindow* window);
 	virtual ~vKDeviceExtension();
 
 	struct SwapChainSupportDetails {
@@ -34,7 +34,11 @@ public:
 	    std::vector<VkPresentModeKHR> presentModes;
 	};
 
-
+//	static void onWindowResized(GLFWwindow* window, int width, int height) {
+//		    if (width == 0 || height == 0) return;
+//		    vKDeviceExtension* app = reinterpret_cast<vKDeviceExtension*>(glfwGetWindowUserPointer(window));
+//		    app->recreateSwapChain(app->getWindow());
+//	};
 
 	vKdevice::QueueFamilyIndices   findQueueFamilies(VkPhysicalDevice device,vKwindow* window);
 	VkPhysicalDevice   			   getPhysicalDevice();
@@ -52,8 +56,8 @@ public:
 	void createSemaphores();
 	void drawFrame();
 	void deviceWaitIdle();
-	void recreateSwapChain();
-
+	void recreateSwapChain(vKwindow* window);
+	vKwindow* getWindow();
 protected:
 
 	VDeleter<VkDevice>         			 logicalDevice   {vkDestroyDevice};
@@ -66,6 +70,8 @@ protected:
 	std::vector<VkCommandBuffer>         commandBuffers;
 	VDeleter<VkSemaphore> 				 imageAvailableSemaphore{logicalDevice, vkDestroySemaphore};
 	VDeleter<VkSemaphore> 				 renderFinishedSemaphore{logicalDevice, vkDestroySemaphore};
+	vKwindow* window;
+
 private:
 
 	const std::vector<const char*>       deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};

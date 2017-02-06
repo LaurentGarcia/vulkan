@@ -29,6 +29,7 @@ public:
 	GLFWwindow*         getWindow();
 	const VkSurfaceKHR* getSurface();
 
+
 	static void error_callback(int error, const char* description);
 
 private:

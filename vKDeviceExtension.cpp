@@ -10,7 +10,10 @@
 
 
 
-vKDeviceExtension::vKDeviceExtension() {
+vKDeviceExtension::vKDeviceExtension(vKwindow* window) {
+
+	this->window = window;
+	//glfwSetWindowSizeCallback(window->getWindow(),vKDeviceExtension::onWindowResized);
 	// TODO Auto-generated constructor stub
 }
 
@@ -250,6 +253,8 @@ void vKDeviceExtension::createSwapChain(VkPhysicalDevice device,vKwindow* window
 	this->swapChainExtent      = extent;
 
 
+
+
 };
 
 void vKDeviceExtension::createLogicalDevice(vKDeviceExtension physicalDevice,vKlayers layers,vKwindow* window){
@@ -303,24 +308,23 @@ void vKDeviceExtension::createImageViews(){
 
 	this->swapChainImageViews.resize(swapChainImages.size(),VDeleter<VkImageView>{this->logicalDevice,vkDestroyImageView});
 
-	for (uint32_t i = 0;( i < this->swapChainImages.size());i++){
-		VkImageViewCreateInfo imageViewInfo = {};
-		imageViewInfo.sType        = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		imageViewInfo.image        = this->swapChainImages[i];
-		imageViewInfo.viewType     = VK_IMAGE_VIEW_TYPE_2D;
-		imageViewInfo.format       = this->swapChainImageFormat;
-		imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-		imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-		imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-		imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+	for (uint32_t i = 0; i < this->swapChainImages.size();i++){
+		VkImageViewCreateInfo createInfo = {};
+		  	  	  	createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		            createInfo.image = swapChainImages[i];
+		            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		            createInfo.format = swapChainImageFormat;
+		            createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		            createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		            createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		            createInfo.subresourceRange.baseMipLevel = 0;
+		            createInfo.subresourceRange.levelCount = 1;
+		            createInfo.subresourceRange.baseArrayLayer = 0;
+		            createInfo.subresourceRange.layerCount = 1;
 
-		imageViewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-		imageViewInfo.subresourceRange.baseMipLevel   = 0;
-		imageViewInfo.subresourceRange.levelCount     = 1;
-		imageViewInfo.subresourceRange.baseArrayLayer = 0;
-		imageViewInfo.subresourceRange.layerCount     = 1;
-
-		if (vkCreateImageView(this->logicalDevice,&imageViewInfo,nullptr,swapChainImageViews[i].replace()) != VK_SUCCESS ){
+		if (vkCreateImageView(this->logicalDevice,&createInfo,nullptr,swapChainImageViews[i].replace()) != VK_SUCCESS ){
 		    throw std::runtime_error("failed to create image views!");
 		}
 		else{
@@ -593,8 +597,8 @@ void vKDeviceExtension::createCommandPool(VkPhysicalDevice device,vKwindow* wind
 
 
 void vKDeviceExtension::createCommandBuffers(){
-	commandBuffers.resize(swapChainFramebuffers.size());
 
+	commandBuffers.resize(swapChainFramebuffers.size());
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool        = commandPool;
@@ -649,8 +653,7 @@ void vKDeviceExtension::createSemaphores(){
 };
 void vKDeviceExtension::drawFrame(){
 	u_int32_t imageIndex;
-	vkAcquireNextImageKHR(logicalDevice,swapChain,std::numeric_limits<u_int64_t>::max(),this->imageAvailableSemaphore,
-						  VK_NULL_HANDLE,&imageIndex);
+	vkAcquireNextImageKHR(this->logicalDevice, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	VkSubmitInfo submitInfo           = {};
 	submitInfo.sType                  = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -684,8 +687,11 @@ void vKDeviceExtension::drawFrame(){
 	presentInfo.pImageIndices         = &imageIndex;
 	presentInfo.pResults		      = nullptr;
 
-	vkQueuePresentKHR(presentQueue,&presentInfo);
+	VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
+	if (result != VK_SUCCESS) {
+	    throw std::runtime_error("failed to present swap chain image!");
+	}
 };
 
 
@@ -694,10 +700,10 @@ void vKDeviceExtension::deviceWaitIdle(){
 };
 
 
-void vKDeviceExtension::recreateSwapChain(){
-	deviceWaitIdle();
 
-	createS
+
+vKwindow* vKDeviceExtension::getWindow(){
+	return this->window;
 };
 
 //ToDo Rating for selected the most valuable GPU

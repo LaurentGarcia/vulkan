@@ -38,7 +38,6 @@ int main(void){
 	vKwindow window;
 	window.initWindow(WIDTH,HEIGHT,windowName);
 
-
 	//3. Create a logical Vulkan Device
 	vKdevice vkDevice;
 	VkResult resultInitVulkan;
@@ -48,7 +47,7 @@ int main(void){
 	//4. Create SurfACE
 	window.createSurface(*vkDevice.getInstance());
 	//4. Found the most suitable GPU in our computer
-	vKDeviceExtension computerDevice;
+	vKDeviceExtension computerDevice{&window};
 	computerDevice.pickPhysicalDevice(vkDevice.getInstance(),&window);
 	//5. Create Logical Device (Interface for our Physical Device and init Queues!
 	computerDevice.createLogicalDevice(computerDevice,vkLayers,&window);
@@ -71,6 +70,6 @@ int main(void){
 	};
 
 	computerDevice.deviceWaitIdle();
-
+	glfwDestroyWindow(window.getWindow());
 	return 0;
 }

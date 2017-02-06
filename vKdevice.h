@@ -33,6 +33,7 @@ public:
 				}
 	};
 
+
 	VkResult initVulkan();
 	VkResult initVulkan(vKlayers* vklayersInfo);
 	const VkInstance* getInstance();
