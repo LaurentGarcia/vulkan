@@ -19,20 +19,17 @@ class Vertex {
 	Vertex();
 	virtual ~Vertex();
 
-	struct VertexAtributes{
+	struct VertexAtrr{
 		glm::vec2 pos;
 		glm::vec3 color;
 	};
 
-	const std::vector<VertexAtributes> vertices = {
-		{{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f} ,{0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f},{0.0f, 0.0f, 1.0f}}
-	};
+	static const std::vector<VertexAtrr> vertices; // Def at cpp
 
 	static VkVertexInputBindingDescription                 getBindingDescription();
 	static std::array<VkVertexInputAttributeDescription,2> getAttributeDescriptions();
 
 };
+
 
 #endif /* VERTEX_H_ */

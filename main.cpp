@@ -60,6 +60,7 @@ int main(void){
 	computerDevice.createGraphicPipeline();
 	computerDevice.createFramebuffers();
 	computerDevice.createCommandPool(computerDevice.getPhysicalDevice(),&window);
+	computerDevice.createVertexBuffer();
 	computerDevice.createCommandBuffers();
 	computerDevice.createSemaphores();
 

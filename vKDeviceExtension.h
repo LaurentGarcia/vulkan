@@ -62,16 +62,18 @@ public:
 	vKwindow* getWindow();
 protected:
 
-	VDeleter<VkDevice>         			 logicalDevice   {vkDestroyDevice};
-	VDeleter<VkSwapchainKHR>   			 swapChain       {logicalDevice, vkDestroySwapchainKHR};
-	VDeleter<VkPipelineLayout> 			 pipelineLayout  {logicalDevice, vkDestroyPipelineLayout};
-	VDeleter<VkRenderPass>     			 renderPass      {logicalDevice, vkDestroyRenderPass};
-	VDeleter<VkPipeline>                 graphicsPipeline{logicalDevice, vkDestroyPipeline};
+	VDeleter<VkDevice>         			 logicalDevice   		{vkDestroyDevice};
+	VDeleter<VkSwapchainKHR>   			 swapChain       		{logicalDevice, vkDestroySwapchainKHR};
+	VDeleter<VkPipelineLayout> 			 pipelineLayout  		{logicalDevice, vkDestroyPipelineLayout};
+	VDeleter<VkRenderPass>     			 renderPass      		{logicalDevice, vkDestroyRenderPass};
+	VDeleter<VkPipeline>                 graphicsPipeline		{logicalDevice, vkDestroyPipeline};
 	std::vector<VDeleter<VkFramebuffer>> swapChainFramebuffers;
-	VDeleter<VkCommandPool>              commandPool     {logicalDevice, vkDestroyCommandPool};
+	VDeleter<VkCommandPool>              commandPool     		{logicalDevice, vkDestroyCommandPool};
 	std::vector<VkCommandBuffer>         commandBuffers;
 	VDeleter<VkSemaphore> 				 imageAvailableSemaphore{logicalDevice, vkDestroySemaphore};
 	VDeleter<VkSemaphore> 				 renderFinishedSemaphore{logicalDevice, vkDestroySemaphore};
+	VDeleter<VkBuffer> 					 vertexBuffer			{logicalDevice, vkDestroyBuffer};
+	VDeleter<VkDeviceMemory> 			 vertexBufferMemory		{logicalDevice, vkFreeMemory};
 	vKwindow* window;
 
 private:
@@ -87,7 +89,8 @@ private:
 	SwapChainSupportDetails  querySwapChainSupport      (VkPhysicalDevice device, vKwindow* window);
 	const std::vector<char>  loadShaders                (const std::string& filename);
 	void			         createShaderModule         (const std::vector<char>& code,
-												         VDeleter<VkShaderModule>& shaderModule);
+														 VDeleter<VkShaderModule>& shaderModule);
+	uint32_t				 findMemoryType 		    (uint32_t typeFilter,VkMemoryPropertyFlags properties);
 
 	VkQueue              			   graphicQueue;
 	VkQueue			     			   presentQueue;
