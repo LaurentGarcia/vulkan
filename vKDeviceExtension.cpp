@@ -411,10 +411,14 @@ void vKDeviceExtension::createGraphicPipeline(){
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount   = 0;
-	vertexInputInfo.pVertexBindingDescriptions      = nullptr;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
-	vertexInputInfo.pVertexAttributeDescriptions    = nullptr;
+
+	auto bindingDescription   = Vertex::getBindingDescription();
+	auto attributeDescription = Vertex::getAttributeDescriptions();
+
+	vertexInputInfo.vertexBindingDescriptionCount   = 1;
+	vertexInputInfo.pVertexBindingDescriptions      = &bindingDescription;
+	vertexInputInfo.vertexAttributeDescriptionCount = attributeDescription.size();
+	vertexInputInfo.pVertexAttributeDescriptions    = attributeDescription.data();
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType    = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -662,7 +666,8 @@ void vKDeviceExtension::drawFrame(){
 
 	u_int32_t imageIndex;
 
-	VkResult result = vkAcquireNextImageKHR(this->logicalDevice, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	//std::numeric_limits<uint64_t>::max()
+	VkResult result = vkAcquireNextImageKHR(this->logicalDevice, swapChain,UINTMAX_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR){
 		recreateSwapChain();

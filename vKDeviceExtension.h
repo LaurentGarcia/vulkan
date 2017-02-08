@@ -17,6 +17,7 @@
 	#include <vector>
 	#include <algorithm>
 	#include <fstream>
+	#include "Vertex.h"
 #endif
 
 const int WIDTH  = 800;
@@ -52,6 +53,7 @@ public:
 	void createGraphicPipeline();
 	void createFramebuffers();
 	void createCommandPool     (VkPhysicalDevice device,vKwindow* window);
+	void createVertexBuffer();
 	void createCommandBuffers();
 	void createSemaphores();
 	void drawFrame();
