@@ -25,6 +25,7 @@ class Vertex {
 	};
 
 	static const std::vector<VertexAtrr> vertices; // Def at cpp
+	static const std::vector<uint16_t>   indices;
 
 	static VkVertexInputBindingDescription                 getBindingDescription();
 	static std::array<VkVertexInputAttributeDescription,2> getAttributeDescriptions();

@@ -8,10 +8,13 @@
 #include "Vertex.h"
 
 const std::vector<Vertex::VertexAtrr> Vertex::vertices =  {
-	    {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-	    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-	    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 };
+
+const std::vector<uint16_t> Vertex::indices = {0,1,2,2,3,0};
 
 Vertex::Vertex() {
 	// TODO Auto-generated constructor stub

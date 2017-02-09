@@ -647,8 +647,10 @@ void vKDeviceExtension::createCommandBuffers(){
 		VkBuffer 	 vertexBuffers[] = {vertexBuffer};
 		VkDeviceSize offsets[]       = {0};
 		vkCmdBindVertexBuffers(commandBuffers[i],0,1,vertexBuffers,offsets);
+		vkCmdBindIndexBuffer  (commandBuffers[i],indexBuffer,0,VK_INDEX_TYPE_UINT16);
 
-		vkCmdDraw(commandBuffers[i],Vertex::vertices.size(),1,0,0);
+		vkCmdDrawIndexed(commandBuffers[i],Vertex::indices.size(),1,0,0,0);
+
 		vkCmdEndRenderPass(commandBuffers[i]);
 		if (vkEndCommandBuffer(commandBuffers[i])!=VK_SUCCESS){
 		    throw std::runtime_error("failed to record command buffer!");
@@ -748,7 +750,12 @@ void vKDeviceExtension::recreateSwapChain(){
 	createCommandBuffers();
 }
 
-void vKDeviceExtension::createVertexBuffer(){
+
+void vKDeviceExtension::createBuffer(VkDeviceSize size,
+									 VkBufferUsageFlags usage,
+									 VkMemoryPropertyFlags properties,
+									 VDeleter<VkBuffer>& buffer,
+									 VDeleter<VkDeviceMemory>& bufferMemory){
 
 	VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType 		= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -756,36 +763,88 @@ void vKDeviceExtension::createVertexBuffer(){
 	bufferInfo.usage 		= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	bufferInfo.sharingMode 	= VK_SHARING_MODE_EXCLUSIVE;
 
-	if(vkCreateBuffer(logicalDevice,&bufferInfo,nullptr,vertexBuffer.replace()) != VK_SUCCESS){
+	if(vkCreateBuffer(logicalDevice,&bufferInfo,nullptr,buffer.replace()) != VK_SUCCESS){
 		throw std::runtime_error("failed to create vertex buffer!");
 	}else{
 		printf("Initializing Vulkan Vertex Buffer: OK\n");fflush(stdout);
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(logicalDevice,vertexBuffer,&memRequirements);
+	vkGetBufferMemoryRequirements(logicalDevice,buffer,&memRequirements);
 
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType 		   =  VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize   =  memRequirements.size;
 	allocInfo.memoryTypeIndex  =  this->findMemoryType(memRequirements.memoryTypeBits,
-													   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-													   | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+														   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+														   | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-	if (vkAllocateMemory(logicalDevice,&allocInfo,nullptr,vertexBufferMemory.replace())!= VK_SUCCESS){
+	if (vkAllocateMemory(logicalDevice,&allocInfo,nullptr,bufferMemory.replace())!= VK_SUCCESS){
 		throw std::runtime_error("failed to allocate vertex buffer memory!");
 	}else{
 		printf("Vulkan Memory Vertex Buffer: OK\n");fflush(stdout);
 	};
 
-	vkBindBufferMemory(logicalDevice,vertexBuffer,vertexBufferMemory,0);
+	vkBindBufferMemory(logicalDevice,buffer,bufferMemory,0);
+}
+void vKDeviceExtension::createVertexBuffer(){
+
+	VkDeviceSize bufferSize = sizeof(Vertex::vertices[0])*Vertex::vertices.size();
+
+	VDeleter<VkBuffer> 			stagingBuffer{logicalDevice,vkDestroyBuffer};
+	VDeleter<VkDeviceMemory>	stagingBufferMemory{logicalDevice,vkFreeMemory};
+
+	createBuffer(bufferSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				stagingBuffer,stagingBufferMemory);
 
 	void* data;
-	vkMapMemory(logicalDevice,vertexBufferMemory,0,bufferInfo.size,0,&data);
-		memcpy(data,Vertex::vertices.data(),(size_t) bufferInfo.size);
-	vkUnmapMemory(logicalDevice,vertexBufferMemory);
+
+	vkMapMemory(logicalDevice,stagingBufferMemory,0,bufferSize,0,&data);
+		memcpy(data,Vertex::vertices.data(),(size_t) bufferSize);
+	vkUnmapMemory(logicalDevice,stagingBufferMemory);
+
+	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+				 vertexBuffer, vertexBufferMemory);
+	copyBuffer(stagingBuffer,vertexBuffer,bufferSize);
 };
 
+
+void vKDeviceExtension::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size){
+
+	VkCommandBufferAllocateInfo allocInfo = {};
+	allocInfo.sType					=	VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.level					=	VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandPool			= 	commandPool;
+	allocInfo.commandBufferCount	= 	1;
+
+	VkCommandBuffer commandBuffer;
+	vkAllocateCommandBuffers(logicalDevice,&allocInfo,&commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType		=  VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags		=  VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer,&beginInfo);
+
+	VkBufferCopy copyRegion = {};
+	copyRegion.srcOffset = 0;
+	copyRegion.dstOffset = 0;
+	copyRegion.size		 = size;
+
+	vkCmdCopyBuffer   (commandBuffer,srcBuffer,dstBuffer,1,&copyRegion);
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType 			   = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount  = 1;
+	submitInfo.pCommandBuffers	   = &commandBuffer;
+
+	vkQueueSubmit(graphicQueue,1,&submitInfo,VK_NULL_HANDLE);
+	vkQueueWaitIdle(graphicQueue);
+
+	vkFreeCommandBuffers(logicalDevice,commandPool,1,&commandBuffer);
+
+}
 
 uint32_t vKDeviceExtension::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
 
@@ -798,6 +857,28 @@ uint32_t vKDeviceExtension::findMemoryType(uint32_t typeFilter, VkMemoryProperty
 		}
 	};
 }
+
+
+void vKDeviceExtension::createIndexBuffer(){
+
+	VkDeviceSize buffersize = sizeof(Vertex::indices[0])*Vertex::indices.size();
+
+	VDeleter<VkBuffer> 			stagingBuffer		{logicalDevice,vkDestroyBuffer};
+	VDeleter<VkDeviceMemory>	stagingBufferMemory	{logicalDevice,vkFreeMemory};
+
+	createBuffer(buffersize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+							VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+							stagingBuffer,stagingBufferMemory);
+	void* data;
+	vkMapMemory(logicalDevice,stagingBufferMemory,0,buffersize,0,&data);
+		memcpy(data,Vertex::indices.data(),(size_t)buffersize);
+	vkUnmapMemory(logicalDevice,stagingBufferMemory);
+
+	createBuffer(buffersize,VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+							VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,indexBuffer,indexBufferMemory);
+
+	copyBuffer(stagingBuffer,indexBuffer,buffersize);
+};
 
 //ToDo Rating for selected the most valuable GPU
 //	   Based in GPU features

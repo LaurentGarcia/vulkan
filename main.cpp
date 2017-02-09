@@ -61,6 +61,7 @@ int main(void){
 	computerDevice.createFramebuffers();
 	computerDevice.createCommandPool(computerDevice.getPhysicalDevice(),&window);
 	computerDevice.createVertexBuffer();
+	computerDevice.createIndexBuffer();
 	computerDevice.createCommandBuffers();
 	computerDevice.createSemaphores();
 

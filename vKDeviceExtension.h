@@ -53,7 +53,14 @@ public:
 	void createGraphicPipeline();
 	void createFramebuffers();
 	void createCommandPool     (VkPhysicalDevice device,vKwindow* window);
+	void createBuffer		   (VkDeviceSize size,
+			 	 	  	  	    VkBufferUsageFlags usage,
+								VkMemoryPropertyFlags properties,
+								VDeleter<VkBuffer>& buffer,
+								VDeleter<VkDeviceMemory>& bufferMemory);
+	void copyBuffer			    (VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void createVertexBuffer();
+	void createIndexBuffer();
 	void createCommandBuffers();
 	void createSemaphores();
 	void drawFrame();
@@ -74,6 +81,10 @@ protected:
 	VDeleter<VkSemaphore> 				 renderFinishedSemaphore{logicalDevice, vkDestroySemaphore};
 	VDeleter<VkBuffer> 					 vertexBuffer			{logicalDevice, vkDestroyBuffer};
 	VDeleter<VkDeviceMemory> 			 vertexBufferMemory		{logicalDevice, vkFreeMemory};
+	VDeleter<VkBuffer>					 indexBuffer			{logicalDevice, vkDestroyBuffer};
+	VDeleter<VkDeviceMemory>			 indexBufferMemory		{logicalDevice, vkFreeMemory};
+
+
 	vKwindow* window;
 
 private:
